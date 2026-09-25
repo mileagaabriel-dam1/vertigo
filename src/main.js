@@ -14,7 +14,12 @@ import { initCursor, initLinks, initMagnetic, initMarquee, splitChars } from './
 gsap.registerPlugin(ScrollTrigger);
 
 // Solo en desarrollo: acceso a GSAP desde la consola para depurar animaciones
-if (import.meta.env.DEV) window.gsap = gsap;
+if (import.meta.env.DEV) {
+  window.gsap = gsap;
+  // ?slow=0.2 → todas las animaciones a cámara lenta (para revisar transiciones)
+  const slow = Number(new URLSearchParams(location.search).get('slow'));
+  if (slow) gsap.globalTimeline.timeScale(slow);
+}
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
@@ -74,9 +79,11 @@ async function boot() {
   ScrollTrigger.addEventListener('refresh', director.measure);
   ScrollTrigger.refresh();
 
+  // La escena 3D no se dibuja mientras la tapa la pantalla de carga (así la carga va fluida)
+  let sceneVisible = false;
   gsap.ticker.add((time) => {
     director.update(time);
-    stage.render();
+    if (sceneVisible) stage.render();
   });
 
   await minimum;
@@ -88,6 +95,7 @@ async function boot() {
     sound.start();
     sound.canOpen();
   }
+  sceneVisible = true;
   await loader.exit();
   intro(director);
 }

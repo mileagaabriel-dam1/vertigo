@@ -48,7 +48,7 @@ export class Loader {
     this.length = this.line.getTotalLength();
     this.line.style.strokeDasharray = `${this.length}`;
 
-    gsap.set('.wipe', { yPercent: 110 });
+    gsap.set('.wipe', { yPercent: 110, visibility: 'visible' });
 
     this.value = 0; // progreso mostrado (0 → 1)
     this.speed = 1; // velocidad de las burbujas

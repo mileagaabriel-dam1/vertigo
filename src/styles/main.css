@@ -543,7 +543,8 @@ section {
   height: 100vh;
   z-index: 250;
   background: linear-gradient(180deg, #ffe14d 0%, #f7c21a 60%, #f2ae00 100%);
-  transform: translateY(110%);
+  /* La posición la controla GSAP (yPercent); oculta hasta que carga el JS */
+  visibility: hidden;
   pointer-events: none;
 }
 
@@ -556,12 +557,12 @@ section {
 }
 
 .wipe__wave--top {
-  bottom: 100%;
+  bottom: calc(100% - 1px);
   fill: #ffe14d;
 }
 
 .wipe__wave--bottom {
-  top: 100%;
+  top: calc(100% - 1px);
   fill: #f2ae00;
 }
 
