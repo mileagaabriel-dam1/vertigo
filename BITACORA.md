@@ -13,7 +13,9 @@ Las entradas más recientes van al final.
 | **Marca** | Vértigo, «Energía cítrica en caída libre» |
 | **Tecnologías** | HTML, CSS, JavaScript, Vite, Three.js, GSAP con ScrollTrigger, Lenis y Web Audio API |
 | **Carpeta** | `C:\Vértigo` |
-| **Estado** | Página de inicio terminada, con 3D, animaciones y sonido |
+| **Repositorio** | https://github.com/mileagaabriel-dam1/vertigo |
+| **Web publicada** | https://mileagaabriel-dam1.github.io/vertigo/ |
+| **Estado** | Página de inicio terminada, con 3D realista (fruta escaneada, fotos reales, bebida), animaciones y sonido |
 
 ---
 
@@ -146,9 +148,91 @@ Todo se sintetiza con la **Web Audio API**, sin archivos de audio.
 
 ---
 
+## 25/09/2026 · Sesión 4: realismo (fruta real, bebida e iluminación de estudio)
+
+El proyecto ya estaba en GitHub (`mileagaabriel-dam1/vertigo`) con Git instalado. El objetivo de esta sesión: que la bebida y la fruta se vean lo más realistas posible, usando recursos reales de la web.
+
+### Recursos descargados (guardados en `public/assets/`, ver `CREDITOS.md`)
+| Recurso | Origen | Licencia |
+|---|---|---|
+| Limón escaneado en 3D (modelo + texturas de color, relieve y rugosidad) | Poly Haven | CC0 |
+| Lima escaneada en 3D | Poly Haven | CC0 |
+| HDRI de estudio fotográfico «Studio Small 09» | Poly Haven | CC0 |
+| Fotos de limón, lima, pomelo rosa y naranja sanguina cortados | Wikimedia Commons | CC BY-SA |
+
+Las fotos se recortaron en círculo con un script propio que detecta el borde de la fruta y ajusta una elipse. En el limón, el pomelo y la sanguina el borde se marcó a mano porque su piel pálida engañaba al detector.
+
+### Qué se hizo
+| Mejora | Cómo |
+|---|---|
+| **Iluminación de estudio real** | HDRI como mapa de entorno y mapeo de tonos «Neutral», pensado para fotografía de producto |
+| **Rodajas realistas** (`src/three/fruit.js`) | Cara = foto real. De la foto se calculan por código el relieve (mapa de normales) y el brillo del zumo (mapa de rugosidad), con algo de luz propia para imitar la translucidez. El borde usa la piel real del escaneo. |
+| **Frutas enteras** | Modelos escaneados. El pomelo y la naranja se hacen tiñendo la textura de la lima. |
+| **Hojas de menta** | Dibujadas por código: contorno dentado, nervios, relieve rugoso y brillo aterciopelado. La sombra tiene forma de hoja. |
+| **La bebida** (`src/three/liquid.js`) | Material de zumo translúcido con efecto Fresnel: más denso en los bordes y con los reflejos siempre visibles |
+| Espiral de bebida en el hero | Tubo con forma de espiral (el símbolo de la marca) alrededor de la lata, con ondas animadas; crece en la intro y se desenrolla al bajar |
+| Salpicaduras en la explosión | Chorros de líquido que nacen de la lata, crecen, se separan y vuelan con una gota en la punta |
+| **Fruta flotando** (`src/three/cluster.js`) | En el hero y en «Sabores»: rodajas, fruta entera y menta de cada sabor alrededor de la lata, con sombras sobre el fondo. Al cambiar de sabor, la fruta anterior sale y entra la nueva. |
+| **Vaso servido** (`src/three/glass.js`) | En la sección de la tienda: vaso de cristal con condensación, bebida del sabor, cubitos, burbujas que suben, pajita de papel y rodaja en el borde |
+| Explosión nueva | Rodajas reales, limones y limas enteros, menta, hielo, gotas de zumo y salpicaduras |
+| Barra de carga real | Ahora sigue la descarga real de los recursos 3D |
+| Créditos | Pie de página y archivo `CREDITOS.md` (lo exige la licencia CC BY-SA de las fotos) |
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| Las texturas de Poly Haven daban error 404 | Las rutas son distintas de las del modelo; se sacaron de la API de Poly Haven |
+| Wikimedia bloqueó las descargas por hacer demasiadas peticiones | Una sola petición con todos los archivos y pausas entre descargas |
+| El vaso se veía blanco y opaco | El cristal no debe tener color propio: color negro y solo reflejos |
+| La espiral y las salpicaduras parecían pintura | Más transparencia en el centro y bordes más densos |
+| Todas las salpicaduras salían del mismo punto, como una estrella | Cada chorro nace en un punto distinto de la lata |
+| El pomelo entero salía verdoso | Otro tono al teñir la lima |
+| En móvil el vaso y la lata tapaban el texto de la tienda | Hueco reservado encima del texto y los objetos suben ahí |
+
+### Peso
+La web compilada ocupa unos 7,5 MB, casi todo texturas de fruta y el HDRI.
+
+---
+
+## 25/09/2026 · Sesión 5: canción, pantalla de carga, interacción y publicación
+
+### Canción (`src/music.js`)
+- Tema de **house / electro-pop a 120 BPM** generado en tiempo real con Web Audio, sin archivos de audio:
+  - batería: bombo a negras, palmas y charles;
+  - bajo a contratiempo;
+  - acordes con el «bombeo» del sidechain;
+  - melodía pegadiza sobre Lam – Fa – Do – Sol, con eco y reverb.
+- Intro de 4 compases con el filtro abriéndose; después entra la melodía.
+- **Reacciona al scroll:** durante la cuenta atrás la música se apaga con un filtro y sube un ruido (*build-up*). Al explotar la lata entra el *drop* con un platillo.
+- A petición, se bajó el volumen de la música y de cada instrumento.
+
+### Pantalla de carga nueva (`src/loader.js`)
+- Espiral hipnótica (el símbolo de la marca) que se dibuja a medida que carga.
+- La palabra VÉRTIGO se llena de bebida con una ola.
+- Burbujas subiendo, mensajes de estado («Exprimiendo limones», «Enfriando latas a 4 °C»...), contador y barra.
+- Botón circular con texto giratorio y efecto magnético.
+- Al entrar, la cámara se lanza dentro de la espiral y una ola de bebida barre la pantalla.
+
+### Interacción con el ratón
+- **Objetos 3D** (`src/three/poke.js`): la lata, las frutas y el vaso reciben un empujón al tocarlos y vuelven con un muelle.
+- **Página:** los botones, enlaces y etiquetas son magnéticos, las tarjetas de datos se inclinan en 3D y las letras del título saltan al tocarlas.
+
+### Publicación
+- Flujo de GitHub Actions (`.github/workflows/deploy.yml`): en cada subida a `main` compila la web y la publica en GitHub Pages.
+- Enlace: https://mileagaabriel-dam1.github.io/vertigo/
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| El programador de la música podía quedarse en bucle si el reloj de audio se adelantaba, y colgaba la página | Como mucho un compás por llamada; si se queda atrás, retoma desde el momento actual |
+| La espiral tenía líneas demasiado gruesas y parecía un conjunto de círculos | Líneas más finas y más vueltas |
+| El mensaje «Todo listo» chocaba con el botón | Espacio reorganizado; el contador se oculta cuando aparece el botón |
+
+---
+
 ## Pendiente
-- [ ] Comprobar en un navegador real cómo se ven los cubitos de hielo y cómo suenan los efectos
-- [ ] Instalar Git y subir el proyecto a GitHub (y publicarlo en GitHub Pages)
+- [ ] Comprobar en un navegador real (con tarjeta gráfica) cómo se ve todo y cómo suenan los efectos
+- [x] Publicar la web en GitHub Pages
 - [ ] Página **Sabores**
 - [ ] Página **Tienda**
 - [ ] Páginas de la fase 2: Producto, Historia, Crew y Contacto

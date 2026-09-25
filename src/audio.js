@@ -1,6 +1,8 @@
 // Todo el sonido se sintetiza con la Web Audio API: no hace falta ningún archivo de audio.
 // Los navegadores solo dejan sonar audio después de un clic, por eso start() se llama desde un botón.
 
+import { Music } from './music.js';
+
 const rand = (min, max) => min + Math.random() * (max - min);
 
 export class Sound {
@@ -49,10 +51,11 @@ export class Sound {
       const data = this.noise.getChannelData(0);
       for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
 
-      this.startAmbient();
+      this.music = new Music(ctx, this.master, this.noise);
     }
 
     this.ctx.resume();
+    this.music.start();
     this.master.gain.cancelScheduledValues(this.now);
     this.master.gain.setTargetAtTime(0.9, this.now, 0.1);
     this.setEnabled(true);
@@ -61,6 +64,7 @@ export class Sound {
   stop() {
     if (!this.ctx) return;
     this.master.gain.setTargetAtTime(0.0001, this.now, 0.1);
+    this.music.stop();
     this.setEnabled(false);
   }
 
@@ -151,6 +155,12 @@ export class Sound {
     this.hiss(t, 'lowpass', 1600, 180, 0.004, 0.8, 0.9);
     this.hiss(t + 0.02, 'bandpass', 2200, 900, 0.01, 0.4, 0.5, 1.2);
     this.fizz(t + 0.08, 1.8, 110, 1.2);
+    this.music.drop();
+  }
+
+  // Build-up de la música antes de la explosión (0 → 1)
+  setTension(t) {
+    if (this.ready) this.music.setTension(t);
   }
 
   // Cambio de sabor: barrido de aire + pop
@@ -160,39 +170,5 @@ export class Sound {
     this.hiss(t, 'bandpass', 400, 2600, 0.12, 0.22, 0.28, 1.4);
     this.tone('sine', 540, 260, t + 0.3, 0.003, 0.3, 0.12);
     this.fizz(t + 0.32, 0.6, 18, 0.7);
-  }
-
-  // Fondo musical suave: acorde de La menor con un filtro que "respira"
-  startAmbient() {
-    const ctx = this.ctx;
-    const t = this.now;
-    const out = ctx.createGain();
-    out.gain.setValueAtTime(0.0001, t);
-    out.gain.exponentialRampToValueAtTime(0.05, t + 4);
-    out.connect(this.master);
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 650;
-    filter.Q.value = 0.6;
-    filter.connect(out);
-
-    const lfo = ctx.createOscillator();
-    const lfoDepth = ctx.createGain();
-    lfo.frequency.value = 0.07;
-    lfoDepth.gain.value = 300;
-    lfo.connect(lfoDepth).connect(filter.frequency);
-    lfo.start(t);
-
-    [110, 164.81, 220, 261.63, 329.63].forEach((f, i) => {
-      [-6, 6].forEach((cents) => {
-        const osc = ctx.createOscillator();
-        osc.type = i < 2 ? 'triangle' : 'sine';
-        osc.frequency.value = f;
-        osc.detune.value = cents;
-        osc.connect(filter);
-        osc.start(t);
-      });
-    });
   }
 }

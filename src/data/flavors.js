@@ -2,6 +2,9 @@
 export const FLAVORS = [
   {
     id: 'limon',
+    fruit: 'lemon',
+    liquid: '#F2D440',
+    mint: false,
     name: 'Limón',
     full: 'Limón Eléctrico',
     tagline: 'El clásico que te pone del revés.',
@@ -14,6 +17,9 @@ export const FLAVORS = [
   },
   {
     id: 'pomelo',
+    fruit: 'grapefruit',
+    liquid: '#FF7F92',
+    mint: false,
     name: 'Pomelo',
     full: 'Pomelo Rosa',
     tagline: 'Amargo justo, dulce lo necesario.',
@@ -26,6 +32,9 @@ export const FLAVORS = [
   },
   {
     id: 'lima',
+    fruit: 'lime',
+    liquid: '#BDE56A',
+    mint: true,
     name: 'Lima-Menta',
     full: 'Lima & Menta',
     tagline: 'Un frescor que corta la respiración.',
@@ -38,6 +47,9 @@ export const FLAVORS = [
   },
   {
     id: 'sanguina',
+    fruit: 'bloodOrange',
+    liquid: '#E8452C',
+    mint: false,
     name: 'Sanguina',
     full: 'Naranja Sanguina',
     tagline: 'Intensa, roja y sin frenos.',

@@ -129,3 +129,65 @@ export function initCounters() {
     });
   });
 }
+
+// Elementos que "notan" el ratón:
+//  - magnéticos: se acercan un poco al puntero y vuelven con un rebote al salir,
+//  - tarjetas: se inclinan en 3D siguiendo al puntero,
+//  - letras del título grande: dan un saltito al tocarlas.
+const MAGNETIC = '.nav__links a, .nav__cta, .nav__sound, .nav__logo, .btn, .hero__badges span, .hero__scroll, .flavors__notes li, .footer__cols a';
+const TILT = '.stat';
+
+export function initMagnetic() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  let magnet = null;
+  let card = null;
+
+  const release = (el) => el && gsap.to(el, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.35)', overwrite: 'auto' });
+  const flatten = (el) => el && gsap.to(el, { rotationX: 0, rotationY: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)', overwrite: 'auto' });
+
+  document.addEventListener('pointermove', (e) => {
+    const el = e.target.closest(MAGNETIC);
+    if (el !== magnet) {
+      release(magnet);
+      magnet = el;
+    }
+    if (el) {
+      const r = el.getBoundingClientRect();
+      gsap.to(el, {
+        x: (e.clientX - (r.left + r.width / 2)) * 0.3,
+        y: (e.clientY - (r.top + r.height / 2)) * 0.4,
+        duration: 0.4,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      });
+    }
+
+    const c = e.target.closest(TILT);
+    if (c !== card) {
+      flatten(card);
+      card = c;
+    }
+    if (c) {
+      const r = c.getBoundingClientRect();
+      gsap.to(c, {
+        rotationY: ((e.clientX - r.left) / r.width - 0.5) * 14,
+        rotationX: -((e.clientY - r.top) / r.height - 0.5) * 14,
+        transformPerspective: 700,
+        duration: 0.5,
+        ease: 'power3.out',
+        overwrite: 'auto',
+      });
+    }
+  });
+
+  // Letras del título: cada una salta y se tuerce un poco al pasar por encima
+  document.querySelectorAll('.hero__title .char').forEach((char) => {
+    char.addEventListener('pointerenter', () => {
+      if (gsap.isTweening(char)) return;
+      gsap
+        .timeline()
+        .to(char, { y: -22, rotation: gsap.utils.random(-9, 9), duration: 0.22, ease: 'power2.out' })
+        .to(char, { y: 0, rotation: 0, duration: 1, ease: 'elastic.out(1, 0.3)' });
+    });
+  });
+}

@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import { MathUtils } from 'three';
+import { applyPoke } from './three/poke.js';
 
 const { clamp, lerp, smoothstep } = MathUtils;
 
@@ -19,9 +20,9 @@ const KEYS = [
   { s: 4.0, x: 0.3, y: 0, rz: 0.12, sc: 1 },
   { s: 4.75, x: 0.52, y: -0.1, rz: -0.22, sc: 0.85 },
   { s: 5.1, x: 0.52, y: -0.1, rz: -0.22, sc: 0.85 },
-  { s: 5.85, x: 0.45, y: 0.05, rz: 0.28, sc: 1 },
-  { s: 6.0, x: 0.45, y: 0.05, rz: 0.28, sc: 1 },
-  { s: 7.0, x: 0.45, y: 3.6, rz: 0.7, sc: 0.9 },
+  { s: 5.85, x: 0.6, y: 0.05, rz: 0.22, sc: 1 },
+  { s: 6.0, x: 0.6, y: 0.05, rz: 0.22, sc: 1 },
+  { s: 7.0, x: 0.6, y: 3.6, rz: 0.7, sc: 0.9 },
 ];
 
 // Secciones cuyo final marca el final de cada capítulo
@@ -65,6 +66,8 @@ function mobileDrop(s) {
   if (s < 2.0) return low;
   if (s < 2.33) return low * (1 - smoothstep(s, 2.0, 2.33));
   if (s < 3.0) return 0;
+  // En la tienda suben al hueco que deja el CSS encima del texto
+  if (s > 5) return lerp(low, 0.3, smoothstep(s, 5.0, 5.6));
   return low;
 }
 
@@ -81,7 +84,7 @@ export function createDirector({ stage, flavors, onFlavor, flash, sound }) {
   const pointer = { x: 0, y: 0 };
   const spin = { v: 0 };
   // Valores de entrada: la lata cae desde arriba girando (los anima main.js)
-  const intro = { y: 4, spin: -Math.PI * 3, sc: 0.5 };
+  const intro = { y: 4, spin: -Math.PI * 3, sc: 0.5, swirl: 0 };
 
   window.addEventListener('pointermove', (e) => {
     pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -108,6 +111,7 @@ export function createDirector({ stage, flavors, onFlavor, flash, sound }) {
     // Vuelta completa y, a mitad de giro, cambio de etiqueta
     gsap.to(spin, { v: `+=${Math.PI * 2 * direction}`, duration: 1.2, ease: 'power3.inOut', overwrite: 'auto' });
     gsap.delayedCall(0.45, () => stage.setFlavor(flavorIndex));
+    stage.cluster.setFlavor(index);
     onFlavor(index);
     sound.swap();
   }
@@ -125,6 +129,7 @@ export function createDirector({ stage, flavors, onFlavor, flash, sound }) {
     const dt = Math.min(0.05, time - lastTime);
     lastTime = time;
 
+    stage.poke.update(dt);
     const s = storyAt(window.scrollY);
     cues(s);
     lastS = s;
@@ -139,6 +144,8 @@ export function createDirector({ stage, flavors, onFlavor, flash, sound }) {
     current.my = lerp(current.my, pointer.y, damp * 0.5);
 
     const shake = s > SHAKE_START && s < BURST ? smoothstep(s, SHAKE_START, BURST) : 0;
+    // La música se va apagando durante la cuenta atrás (build-up) y estalla con la lata
+    sound.setTension(s > 2.26 && s < BURST ? smoothstep(s, 2.26, BURST) : 0);
     const rise = s > 3 && s < 3.2 ? 1 - smoothstep(s, REAPPEAR, 3.2) : 0;
     const scale = key.sc * visibility(s) * intro.sc * (mobile ? 0.58 : 1);
 
@@ -156,6 +163,44 @@ export function createDirector({ stage, flavors, onFlavor, flash, sound }) {
       time * 0.35 + s * Math.PI * 1.25 + spin.v + intro.spin + current.mx * 0.5,
       current.rz + Math.sin(time * 53) * 0.07 * shake,
     );
+    applyPoke(can);
+
+    const baseScale = key.sc * intro.sc * (mobile ? 0.58 : 1);
+
+    // Espiral de bebida: crece en la intro y se "desenrolla" al empezar a bajar
+    const swirl = stage.swirl;
+    swirl.position.copy(can.position);
+    swirl.scale.setScalar(baseScale);
+    swirl.rotation.set(can.rotation.x, -time * 0.45, can.rotation.z, 'XZY');
+    swirl.update(time, intro.swirl * (1 - smoothstep(s, 0.05, 0.75)));
+
+    // Fruta alrededor de la lata: en el hero y en "Sabores"
+    const heroFruit = intro.swirl * (1 - smoothstep(s, 0.3, 0.8));
+    const flavorFruit = smoothstep(s, 3.05, 3.3) * (1 - smoothstep(s, 4.0, 4.2));
+    const fruitVisibility = Math.max(heroFruit, flavorFruit);
+    const cluster = stage.cluster;
+    cluster.visible = fruitVisibility > 0.01;
+    cluster.position.copy(can.position);
+    cluster.scale.setScalar(Math.max(baseScale * fruitVisibility, 0.0001));
+    cluster.rotation.z = can.rotation.z * 0.5;
+    cluster.update(time);
+
+    // Vaso servido: sube desde abajo en la sección de la tienda y se va con la lata al final
+    const glassIn = smoothstep(s, 5.1, 5.6);
+    const glass = stage.glass;
+    glass.visible = glassIn > 0.01;
+    if (glass.visible) {
+      const glassScale = 1.15 * (mobile ? 0.58 : 1);
+      glass.scale.setScalar(glassScale);
+      glass.position.set(
+        (mobile ? -0.45 : 0.27) * stage.halfWidth,
+        current.y - (mobile ? 0.25 : 0.4) - (1 - glassIn) * 4,
+        -0.5,
+      );
+      glass.rotation.set(0.08, Math.sin(time * 0.4) * 0.25, 0);
+      applyPoke(glass);
+      glass.update(time, glassScale);
+    }
 
     const aura = stage.aura;
     aura.position.set(can.position.x, can.position.y, -1.2);

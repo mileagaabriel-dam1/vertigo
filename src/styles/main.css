@@ -187,22 +187,405 @@ section {
   position: fixed;
   inset: 0;
   z-index: 200;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 45%, #1d1a0c 0%, #0b0b0d 58%);
+  color: var(--ink);
+}
+
+.loader__bubbles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Foco de luz que respira detrás de la palabra */
+.loader__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70vmin;
+  height: 70vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 225, 77, 0.22), rgba(255, 225, 77, 0) 65%);
+  transform: translate(-50%, -50%);
+  animation: breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% { transform: translate(-50%, -50%) scale(1.18); opacity: 0.7; }
+}
+
+/* Espiral hipnótica: se dibuja a medida que carga y gira sin parar */
+.loader__spiral {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 118vmin;
+  height: 118vmin;
+  margin: -59vmin 0 0 -59vmin;
+  will-change: transform;
+}
+
+.loader__spiral svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: spin 38s linear infinite;
+}
+
+.loader__spiral-track,
+.loader__spiral-line {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.loader__spiral-track {
+  stroke: rgba(244, 241, 232, 0.06);
+  stroke-width: 0.3;
+}
+
+.loader__spiral-line {
+  stroke: var(--yellow);
+  stroke-width: 0.42;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 1.2px rgba(255, 225, 77, 0.8));
+}
+
+@keyframes spin {
+  to { transform: rotate(-360deg); }
+}
+
+.loader__top,
+.loader__bottom {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.loader__top {
+  top: 26px;
+}
+
+.loader__bottom {
+  bottom: 34px;
+}
+
+.loader__mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--display);
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.loader__mark svg {
+  width: 24px;
+  height: 24px;
+  color: var(--yellow);
+}
+
+.loader__mark sup {
+  font-size: 0.45em;
+}
+
+.loader__hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loader__eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.loader__eq i {
+  width: 3px;
+  height: 100%;
+  background: var(--yellow);
+  transform-origin: bottom;
+  animation: eq-bar 0.9s ease-in-out infinite alternate;
+}
+
+.loader__eq i:nth-child(2) { animation-delay: -0.3s; }
+.loader__eq i:nth-child(3) { animation-delay: -0.6s; }
+.loader__eq i:nth-child(4) { animation-delay: -0.15s; }
+
+@keyframes eq-bar {
+  from { transform: scaleY(0.2); }
+  to { transform: scaleY(1); }
+}
+
+.loader__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  background: var(--bg);
+  gap: 10px;
+  transform: translate(-50%, -62%);
+  text-align: center;
 }
 
-.loader__rays {
+.loader__kicker {
+  font-size: 0.8rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* La palabra se llena de bebida (con ola) según avanza la carga */
+.loader__word {
+  position: relative;
+  font-family: var(--display);
+  font-size: clamp(4rem, 17vw, 15rem);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.loader__word-outline {
+  display: block;
+  padding-top: 0.12em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 225, 77, 0.5);
+}
+
+.loader__word-fill {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  padding-top: 0.12em;
+  color: transparent;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='28' viewBox='0 0 220 28'%3E%3Cpath d='M0 14 Q 27.5 0 55 14 T 110 14 T 165 14 T 220 14 V28 H0 Z' fill='%23ffe14d'/%3E%3C/svg%3E"),
+    linear-gradient(#ffe14d, #f2ae00);
+  background-repeat: repeat-x, no-repeat;
+  background-size: 220px 28px, 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(255, 200, 40, 0.25));
+}
+
+.loader__status {
+  min-height: 1.4em;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.loader__count {
+  font-family: var(--display);
+  font-size: 2.6rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.loader__count small {
+  margin-left: 2px;
+  font-size: 0.45em;
+  color: var(--yellow);
+}
+
+.loader__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(244, 241, 232, 0.08);
+}
+
+.loader__bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #f2ae00, var(--yellow));
+  box-shadow: 0 0 18px var(--yellow);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Botón circular con texto que gira alrededor */
+.loader__enter {
+  position: absolute;
+  left: 50%;
+  bottom: 11vh;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  transform: translateX(-50%);
+  visibility: hidden;
+}
+
+.loader__enter.is-visible {
+  visibility: visible;
+}
+
+.loader__open {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #111;
+}
+
+.loader__open::before {
+  content: '';
+  position: absolute;
+  inset: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3a6, var(--yellow) 45%, #f2ae00);
+  box-shadow: 0 0 0 0 rgba(255, 225, 77, 0.55), 0 10px 40px rgba(255, 200, 40, 0.35);
+  animation: pulse-ring 2s ease-out infinite;
+  transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.loader__open:hover::before {
+  transform: scale(1.08);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 225, 77, 0.55), 0 10px 40px rgba(255, 200, 40, 0.35); }
+  100% { box-shadow: 0 0 0 28px rgba(255, 225, 77, 0), 0 10px 40px rgba(255, 200, 40, 0.35); }
+}
+
+.loader__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: spin 14s linear infinite reverse;
+}
+
+.loader__ring text {
+  font-family: var(--body);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 3.2px;
+  text-transform: uppercase;
+  fill: var(--ink);
+}
+
+.loader__open-core {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.loader__open:hover .loader__open-core {
+  transform: rotate(-12deg) translateY(-3px);
+}
+
+.loader__open-core svg {
+  width: 20px;
+  height: 28px;
+}
+
+.loader__open-core b {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.loader__mute {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.loader__mute:hover {
+  color: var(--ink);
+}
+
+.loader button:focus-visible,
+.nav__sound:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+/* Ola de bebida que barre la pantalla al entrar */
+.wipe {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 250;
+  background: linear-gradient(180deg, #ffe14d 0%, #f7c21a 60%, #f2ae00 100%);
+  transform: translateY(110%);
   pointer-events: none;
 }
 
-.loader__rays::before,
+.wipe__wave {
+  position: absolute;
+  left: 0;
+  width: 200%;
+  height: 60px;
+  animation: wipe-wave 1.2s linear infinite;
+}
+
+.wipe__wave--top {
+  bottom: 100%;
+  fill: #ffe14d;
+}
+
+.wipe__wave--bottom {
+  top: 100%;
+  fill: #f2ae00;
+}
+
+@keyframes wipe-wave {
+  to { transform: translateX(-50%); }
+}
+
+@media (max-width: 600px) {
+  .loader__bottom span:first-child,
+  .loader__bottom span:last-child,
+  .loader__hint {
+    font-size: 0.6rem;
+  }
+
+  .loader__bottom span:last-child {
+    display: none;
+  }
+
+  .loader__center {
+    transform: translate(-50%, -62%);
+  }
+}
+
+/* Rayos giratorios detrás del título del hero */
 .hero__rays::before {
   content: '';
   position: absolute;
@@ -219,154 +602,6 @@ section {
 @keyframes rays {
   from { transform: translate(-50%, -50%) rotate(0deg); }
   to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.loader__can {
-  position: relative;
-  width: 64px;
-  height: 118px;
-  overflow: hidden;
-  border: 2px solid var(--ink);
-  border-radius: 14px 14px 10px 10px;
-  box-shadow: 0 0 60px rgba(255, 225, 77, 0.18);
-}
-
-/* Tapa de la lata del loader */
-.loader__can::before {
-  content: '';
-  position: absolute;
-  top: 7px;
-  left: 8px;
-  right: 8px;
-  height: 2px;
-  z-index: 2;
-  border-radius: 2px;
-  background: var(--ink);
-  opacity: 0.6;
-}
-
-.loader__fill {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 0;
-  background: linear-gradient(to top, #f2ae00, var(--yellow));
-}
-
-.loader__wave {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  width: 200%;
-  height: 8px;
-  fill: var(--yellow);
-  animation: wave 1.4s linear infinite;
-}
-
-@keyframes wave {
-  to { transform: translateX(-50%); }
-}
-
-.loader__fill i {
-  position: absolute;
-  bottom: 0;
-  width: 5px;
-  height: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  animation: rise 2.2s ease-in infinite;
-}
-
-.loader__fill i:nth-child(2) { left: 12%; animation-delay: 0.1s; }
-.loader__fill i:nth-child(3) { left: 38%; width: 7px; height: 7px; animation-delay: 0.9s; }
-.loader__fill i:nth-child(4) { left: 62%; width: 4px; height: 4px; animation-delay: 0.5s; }
-.loader__fill i:nth-child(5) { left: 80%; animation-delay: 1.4s; }
-.loader__fill i:nth-child(6) { left: 50%; width: 3px; height: 3px; animation-delay: 1.8s; }
-
-@keyframes rise {
-  0% { transform: translateY(0); opacity: 0; }
-  20% { opacity: 1; }
-  100% { transform: translateY(-110px); opacity: 0; }
-}
-
-.loader__brand {
-  font-family: var(--display);
-  font-size: 2rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-}
-
-.loader__count {
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.loader__enter {
-  position: absolute;
-  bottom: 12vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  visibility: hidden;
-}
-
-.loader__enter.is-visible {
-  visibility: visible;
-}
-
-.loader__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 28px;
-  border-radius: 999px;
-  background: var(--yellow);
-  color: #111;
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 0 0 0 rgba(255, 225, 77, 0.5);
-  animation: pulse 2s ease-out infinite;
-  transition: transform 0.3s;
-}
-
-.loader__btn:hover {
-  transform: scale(1.05);
-}
-
-.loader__btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 225, 77, 0.5); }
-  100% { box-shadow: 0 0 0 22px rgba(255, 225, 77, 0); }
-}
-
-.loader__mute {
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
-.loader__mute:hover {
-  color: var(--ink);
-}
-
-.loader button:focus-visible,
-.nav__sound:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
 }
 
 /* ============ Navegación ============ */
@@ -1085,6 +1320,17 @@ section {
   color: var(--muted);
 }
 
+.footer__credits {
+  flex-basis: 100%;
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.footer__credits a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ============ Responsive ============ */
 @media (max-width: 860px) {
   .nav__links {
@@ -1109,6 +1355,11 @@ section {
 
   .flavors__dots {
     display: none;
+  }
+
+  /* Hueco para la lata y el vaso encima del texto de la tienda */
+  .cta__inner {
+    padding-top: 46vh;
   }
 }
 
@@ -1135,9 +1386,11 @@ section {
 @media (prefers-reduced-motion: reduce) {
   .grain,
   .hero__scroll i::after,
-  .loader__rays::before,
   .hero__rays::before,
-  .loader__btn {
+  .loader__spiral svg,
+  .loader__ring,
+  .loader__glow,
+  .loader__open::before {
     animation: none;
   }
 }
