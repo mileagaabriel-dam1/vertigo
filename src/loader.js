@@ -29,7 +29,9 @@ function spiralPath(turns = 9, radius = 98, steps = 1400) {
 }
 
 export class Loader {
-  constructor() {
+  // auto: sin botón de entrada; al terminar de cargar sale sola (páginas interiores)
+  constructor({ auto = false } = {}) {
+    this.auto = auto;
     const el = document.querySelector('.loader');
     this.el = el;
     this.fill = el.querySelector('.loader__word-fill');
@@ -171,6 +173,7 @@ export class Loader {
     this.el.classList.add('is-ready');
     this.status.textContent = 'Todo listo. Agárrate.';
     gsap.fromTo(this.status, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6 });
+    if (this.auto || !this.enter) return;
 
     gsap.to('.loader__count', { opacity: 0, y: 10, duration: 0.5 });
     this.enter.classList.add('is-visible');
@@ -207,11 +210,11 @@ export class Loader {
   // ---------- Salida: zambullida en la espiral y ola de bebida ----------
 
   exit() {
-    window.removeEventListener('pointermove', this.onMove);
+    if (this.onMove) window.removeEventListener('pointermove', this.onMove);
     return new Promise((resolve) => {
       gsap
         .timeline()
-        .to(this.enter, { scale: 0.6, opacity: 0, duration: 0.45, ease: 'back.in(2)' }, 0)
+        .to(this.enter || {}, { scale: 0.6, opacity: 0, duration: 0.45, ease: 'back.in(2)' }, 0)
         .to('.loader__top, .loader__bottom, .loader__bar', { opacity: 0, duration: 0.4 }, 0)
         .to(this, { speed: 9, duration: 1.1, ease: 'power2.in' }, 0)
         .to('.loader__center', { scale: 1.3, opacity: 0, filter: 'blur(14px)', duration: 0.9, ease: 'power3.in' }, 0.05)

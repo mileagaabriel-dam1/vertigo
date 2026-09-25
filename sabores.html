@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vértigo — Energía cítrica en caída libre</title>
+    <title>Sabores — Vértigo</title>
     <meta
       name="description"
-      content="Vértigo, la bebida energética de cítricos reales. Limón, pomelo, lima y naranja sanguina con cafeína natural y 0% azúcar."
+      content="Los cuatro sabores de Vértigo: Limón Eléctrico, Pomelo Rosa, Lima &amp; Menta y Naranja Sanguina. Gíralos en 3D y encuentra el tuyo."
     />
     <meta name="theme-color" content="#0b0b0d" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -17,11 +17,7 @@
       href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap"
     />
   </head>
-  <body>
-    <!--
-      Pantalla de carga: una espiral que se dibuja con la carga, la palabra VÉRTIGO llenándose de bebida,
-      burbujas y un botón para "abrir la lata" (con sonido). Al entrar, la cámara se lanza dentro de la espiral.
-    -->
+  <body class="page-sabores">
     <div class="loader" role="dialog" aria-label="Cargando Vértigo">
       <canvas class="loader__bubbles" aria-hidden="true"></canvas>
       <div class="loader__glow" aria-hidden="true"></div>
@@ -52,41 +48,12 @@
       </div>
 
       <div class="loader__center">
-        <p class="loader__kicker">Energía cítrica en caída libre</p>
+        <p class="loader__kicker">Cuatro sabores, una caída</p>
         <div class="loader__word" aria-hidden="true">
           <span class="loader__word-outline">Vértigo</span>
           <span class="loader__word-fill">Vértigo</span>
         </div>
         <p class="loader__status" aria-live="polite"><span class="js-loader-status">Exprimiendo limones</span></p>
-      </div>
-
-      <div class="loader__enter">
-        <button type="button" class="loader__open js-enter-sound" aria-label="Abrir la lata y entrar con sonido">
-          <svg class="loader__ring" viewBox="0 0 200 200" aria-hidden="true">
-            <defs>
-              <path id="loader-ring-path" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
-            </defs>
-            <text>
-              <textPath href="#loader-ring-path">Abrir la lata · con sonido · abrir la lata · con sonido ·</textPath>
-            </text>
-          </svg>
-          <span class="loader__open-core" aria-hidden="true">
-            <!-- Anilla de la lata -->
-            <svg viewBox="0 0 40 56">
-              <path
-                d="M20 2c9 0 16 6 16 14v12c0 8-7 14-16 14S4 36 4 28V16C4 8 11 2 20 2z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-              />
-              <ellipse cx="20" cy="15" rx="8" ry="7" fill="none" stroke="currentColor" stroke-width="3" />
-              <circle cx="20" cy="33" r="3.5" fill="currentColor" />
-              <path d="M20 42v12" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-            </svg>
-            <b>Abrir</b>
-          </span>
-        </button>
-        <button type="button" class="loader__mute js-enter-mute">Entrar sin sonido</button>
       </div>
 
       <div class="loader__bottom">
@@ -107,16 +74,14 @@
       </svg>
     </div>
 
-    <!-- Capas fijas: escena 3D, destello de la explosión, grano y cursor -->
-    <canvas class="webgl" aria-hidden="true"></canvas>
-    <div class="flash" aria-hidden="true"></div>
+    <!-- Capas fijas: grano, cursor y avisos -->
     <div class="grain" aria-hidden="true"></div>
     <div class="cursor" aria-hidden="true"></div>
     <div class="cursor-ring" aria-hidden="true"></div>
     <div class="toast" role="status" aria-live="polite"></div>
 
     <header class="nav">
-      <a href="#top" class="nav__logo" aria-label="Vértigo, volver al inicio">
+      <a href="index.html" class="nav__logo" aria-label="Vértigo, ir al inicio">
         <svg viewBox="1 1 12 12" aria-hidden="true">
           <path
             d="M6 7a1 1 0 0 1 2 0a2 2 0 0 1-4 0a3 3 0 0 1 6 0a4 4 0 0 1-8 0a5 5 0 0 1 10 0"
@@ -129,7 +94,7 @@
         <span>Vértigo</span>
       </a>
       <nav class="nav__links" aria-label="Principal">
-        <a href="sabores.html">Sabores</a>
+        <a href="sabores.html" aria-current="page">Sabores</a>
         <a href="#" data-soon="Producto">Producto</a>
         <a href="#" data-soon="Historia">Historia</a>
         <a href="#" data-soon="Crew">Crew</a>
@@ -144,110 +109,81 @@
     </header>
 
     <main id="top">
-      <!-- 00 · Hero -->
-      <section id="hero" class="hero">
-        <div class="hero__rays" aria-hidden="true"></div>
-        <h1 class="hero__title" aria-label="Vértigo">Vértigo</h1>
-        <div class="hero__bottom">
-          <p class="hero__lead">Energía cítrica<br />en caída libre.</p>
-          <div class="hero__badges">
-            <span>80 mg cafeína natural</span>
-            <span>0% azúcar</span>
-            <span>Cítricos reales</span>
+      <!-- 01 · Showroom 3D: las cuatro latas en un carrusel -->
+      <section class="showroom" id="showroom" aria-label="Elige tu sabor">
+        <canvas class="showroom__canvas" aria-hidden="true"></canvas>
+        <div class="showroom__bgword js-sr-word" aria-hidden="true"></div>
+
+        <div class="showroom__info">
+          <p class="eyebrow">Sabores — <span class="js-sr-index">01</span> / <span class="js-sr-total">04</span></p>
+          <h1 class="showroom__name js-sr-name">Limón Eléctrico</h1>
+          <p class="showroom__tag js-sr-tag"></p>
+          <p class="showroom__desc js-sr-desc"></p>
+          <ul class="showroom__notes js-sr-notes"></ul>
+          <div class="showroom__actions">
+            <button type="button" class="btn showroom__add js-sr-add">Añadir al carrito <span class="btn__arrow">+</span></button>
+            <p class="showroom__moment">Ideal para: <b class="js-sr-moment"></b></p>
           </div>
-          <div class="hero__scroll"><span>Desliza para caer</span><i></i></div>
         </div>
+
+        <div class="showroom__profile">
+          <p class="eyebrow">Perfil de sabor</p>
+          <dl class="profile js-sr-profile"></dl>
+        </div>
+
+        <div class="showroom__controls">
+          <button type="button" class="showroom__arrow js-sr-prev" aria-label="Sabor anterior">←</button>
+          <div class="showroom__tabs js-sr-tabs" role="tablist" aria-label="Sabores"></div>
+          <button type="button" class="showroom__arrow js-sr-next" aria-label="Sabor siguiente">→</button>
+        </div>
+        <p class="showroom__hint" aria-hidden="true"><span>↔</span> Arrastra para girar</p>
       </section>
 
-      <!-- 01 · Manifiesto -->
-      <section id="manifiesto" class="manifesto">
-        <div class="manifesto__stage">
-          <p class="eyebrow">01 — Manifiesto</p>
-          <p class="manifesto__text">
-            No es una bebida. Es el segundo antes de saltar. <em>Limón, lima y pomelo</em> exprimidos en
-            frío, cafeína natural de guaraná y un golpe de jengibre que te despierta hasta las ideas.
-            <em>Sin azúcar. Sin frenos.</em>
-          </p>
-          <ul class="manifesto__side">
-            <li>Exprimido en frío</li>
-            <li>Guaraná natural</li>
-            <li>Jengibre fresco</li>
-            <li>Lata 100% reciclable</li>
-          </ul>
-        </div>
+      <!-- 02 · Comparativa -->
+      <section class="compare" id="comparar">
+        <p class="eyebrow">02 — Frente a frente</p>
+        <h2 class="compare__title">Elige tu <em>caída</em>.</h2>
+        <div class="compare__grid js-compare"></div>
       </section>
 
-      <!-- 02 · Explosión -->
-      <section id="explosion" class="explosion">
-        <div class="explosion__stage">
-          <div class="explosion__glow"></div>
-          <p class="eyebrow explosion__eyebrow">02 — El momento</p>
-          <div class="countdown" aria-hidden="true"><span>3</span><span>2</span><span>1</span></div>
-          <h2 class="explosion__title">
-            <span class="line">Siente el</span>
-            <span class="line line--outline">vértigo</span>
-          </h2>
-          <p class="explosion__sub">Limón, hielo y una descarga cítrica que va directa a tu cara.</p>
-        </div>
-      </section>
-
-      <!-- 03 · Sabores -->
-      <section id="sabores" class="flavors">
-        <div class="flavors__stage">
-          <div class="flavors__bgword" aria-hidden="true"></div>
-          <div class="flavors__info">
-            <p class="eyebrow">03 — Sabores</p>
-            <p class="flavors__count"><span class="js-fl-index">01</span> / <span class="js-fl-total">04</span></p>
-            <h2 class="flavors__name js-fl-name"></h2>
-            <p class="flavors__tag js-fl-tag"></p>
-            <ul class="flavors__notes js-fl-notes"></ul>
-            <a href="sabores.html" class="flavors__more">Descubre los 4 sabores <span>→</span></a>
-          </div>
-          <ol class="flavors__dots"></ol>
-          <div class="flavors__progress"><i></i></div>
-        </div>
-      </section>
-
-      <!-- 04 · Datos -->
-      <section id="datos" class="stats">
-        <p class="eyebrow">04 — Lo que llevas dentro</p>
-        <h2 class="stats__title">Todo el subidón. <em>Nada de bajón.</em></h2>
+      <!-- 03 · Lo que llevan todas -->
+      <section class="stats" id="ingredientes">
+        <p class="eyebrow">03 — Lo que llevan todas</p>
+        <h2 class="stats__title">Cuatro sabores. <em>La misma energía.</em></h2>
         <div class="stats__grid">
           <article class="stat">
             <div class="stat__num"><span data-count="80">0</span><small>mg</small></div>
-            <p>de cafeína natural de guaraná por lata.</p>
-          </article>
-          <article class="stat">
-            <div class="stat__num"><span data-count="0">0</span><small>g</small></div>
-            <p>de azúcar añadido. Endulzada con estevia.</p>
+            <p>de cafeína natural de guaraná. Sube suave, sin tembleque.</p>
           </article>
           <article class="stat">
             <div class="stat__num"><span data-count="15">0</span><small>%</small></div>
             <p>de zumo real de cítricos exprimidos en frío.</p>
           </article>
           <article class="stat">
-            <div class="stat__num"><span data-count="35">0</span><small>kcal</small></div>
-            <p>por lata de 250 ml. Ligera como una caída libre.</p>
+            <div class="stat__num"><span data-count="0">0</span><small>g</small></div>
+            <p>de azúcar añadido. Endulzada con estevia.</p>
+          </article>
+          <article class="stat">
+            <div class="stat__num"><span data-count="100">0</span><small>%</small></div>
+            <p>lata de aluminio reciclable, una y otra vez.</p>
           </article>
         </div>
       </section>
 
-      <!-- 05 · Llamada a la tienda -->
-      <section id="cta" class="cta">
+      <!-- 04 · Llamada a la tienda -->
+      <section class="cta">
         <div class="marquee" aria-hidden="true">
           <div class="marquee__track">
-            <span>Energía cítrica <i></i></span>
-            <span>Sin azúcar <i></i></span>
-            <span>¿Te atreves? <i></i></span>
-            <span>Vértigo <i></i></span>
+            <span>Limón <i></i></span>
+            <span>Pomelo <i></i></span>
+            <span>Lima-Menta <i></i></span>
+            <span>Sanguina <i></i></span>
           </div>
         </div>
         <div class="cta__inner">
-          <p class="eyebrow">05 — Tienda</p>
-          <h2 class="cta__title">¿Te atreves<br />a <em>caer</em>?</h2>
-          <p class="cta__text">
-            Packs de 6, 12 y 24 latas con envío en 24 h. Mezcla sabores o quédate con tu favorito.
-          </p>
+          <p class="eyebrow">04 — Tienda</p>
+          <h2 class="cta__title">¿Cuál es<br /><em>el tuyo</em>?</h2>
+          <p class="cta__text">Pack degustación con los cuatro sabores, o 6, 12 y 24 latas de tu favorito. Envío en 24 h.</p>
           <a href="#" class="btn" data-soon="Tienda">Ir a la tienda <span class="btn__arrow">→</span></a>
         </div>
       </section>
@@ -260,7 +196,7 @@
           <div>
             <h3>Web</h3>
             <ul>
-              <li><a href="#top">Inicio</a></li>
+              <li><a href="index.html">Inicio</a></li>
               <li><a href="sabores.html">Sabores</a></li>
               <li><a href="#" data-soon="Producto">Producto</a></li>
               <li><a href="#" data-soon="Historia">Historia</a></li>
@@ -294,6 +230,6 @@
       </div>
     </footer>
 
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/pages/sabores.js"></script>
   </body>
 </html>

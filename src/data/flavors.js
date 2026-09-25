@@ -1,7 +1,11 @@
 // Sabores de Vértigo. Los colores se usan en la etiqueta 3D de la lata y en el fondo de la sección.
+// profile: perfil de sabor de 0 a 5 (página de Sabores).
 export const FLAVORS = [
   {
     id: 'limon',
+    description: 'Limón siciliano exprimido en frío, un toque de jengibre fresco y cafeína de guaraná. Ácido, limpio y con un final que despierta.',
+    profile: { dulzor: 2, acidez: 5, intensidad: 4, frescor: 4 },
+    moment: 'A primera hora',
     fruit: 'lemon',
     liquid: '#F2D440',
     mint: false,
@@ -17,6 +21,9 @@ export const FLAVORS = [
   },
   {
     id: 'pomelo',
+    description: 'Pomelo rosa con flor de hibisco y un pellizco de pimienta rosa. Un amargor elegante que termina en un final floral.',
+    profile: { dulzor: 2, acidez: 3, intensidad: 3, frescor: 4 },
+    moment: 'Tardes de estudio',
     fruit: 'grapefruit',
     liquid: '#FF7F92',
     mint: false,
@@ -32,6 +39,9 @@ export const FLAVORS = [
   },
   {
     id: 'lima',
+    description: 'Lima kaffir, hierbabuena y un toque de pepino. El más refrescante de todos: como abrir la nevera en pleno agosto.',
+    profile: { dulzor: 1, acidez: 4, intensidad: 2, frescor: 5 },
+    moment: 'Después de entrenar',
     fruit: 'lime',
     liquid: '#BDE56A',
     mint: true,
@@ -47,6 +57,9 @@ export const FLAVORS = [
   },
   {
     id: 'sanguina',
+    description: 'Naranja sanguina, pomelo y un chile suave que aparece al final. El más intenso de la familia, para los que no frenan.',
+    profile: { dulzor: 3, acidez: 3, intensidad: 5, frescor: 3 },
+    moment: 'Noches largas',
     fruit: 'bloodOrange',
     liquid: '#E8452C',
     mint: false,

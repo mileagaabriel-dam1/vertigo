@@ -13,6 +13,7 @@ export default defineConfig({
       // Cada página nueva de la web se añade aquí
       input: {
         main: page('./index.html'),
+        sabores: page('./sabores.html'),
       },
     },
   },

@@ -230,10 +230,47 @@ La web compilada ocupa unos 7,5 MB, casi todo texturas de fruta y el HDRI.
 
 ---
 
+## 25/09/2026 · Sesión 6: cabos sueltos y página de Sabores
+
+### Cabos sueltos cerrados
+| Pendiente | Qué se hizo |
+|---|---|
+| La ola de la pantalla de carga llegaba tarde (pasaba por encima de la web ya visible) | El CSS y GSAP sumaban dos desplazamientos; ahora solo lo controla GSAP |
+| La escena 3D se dibujaba detrás de la pantalla de carga sin verse | Ya no se dibuja hasta que empieza la salida: la carga va más fluida en ordenadores modestos |
+| Transiciones difíciles de revisar | Modo cámara lenta `?slow=0.2` en la dirección (solo en desarrollo) |
+| README reducido al título | README completo: instrucciones, estructura y enlace a la web |
+| Pantalla de carga en móvil y efectos del ratón sin comprobar | Revisados con capturas (roce con la lata y enlaces magnéticos) |
+
+### Página de Sabores (`sabores.html`)
+- **Showroom 3D** (`src/three/showroom.js`):
+  - las cuatro latas en un carrusel en forma de elipse;
+  - la elegida pasa al frente, gira sola y se rodea de su fruta real; las demás se quedan atrás y más oscuras;
+  - se gira con flechas, pestañas, teclado (← →) o **arrastrando** con el ratón o el dedo;
+  - el fondo cambia al color del sabor.
+- **Ficha del sabor:** descripción, ingredientes, momento ideal y **perfil de sabor** con barras animadas (dulzor, acidez, intensidad, frescor). Botón «Añadir al carrito», que muestra un aviso porque la tienda aún no existe.
+- **Enlace directo a un sabor:** `sabores.html#lima` abre directamente la Lima-Menta.
+- **Frente a frente:** tarjetas de los cuatro sabores con su perfil, que se inclinan con el ratón; «Verla en 3D» sube y gira el carrusel.
+- **Lo que llevan todas:** contadores animados (cafeína, zumo, azúcar y lata reciclable) y llamada a la tienda.
+
+### Reorganización del código
+- `src/common.js`: lo que comparten todas las páginas (scroll suave, sonido, cursor, enlaces, efectos magnéticos).
+- `src/three/studio.js`: renderizador, HDRI, luces y pared de sombras, comunes al inicio y a Sabores.
+- Pantalla de carga con **modo automático** (sin botón) para las páginas interiores.
+- **Transición entre páginas:** al pulsar un enlace a otra página, la ola de bebida tapa la pantalla antes de cambiar.
+- Vite compila las dos páginas (`vite.config.js`).
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| En el carrusel circular, la lata de la izquierda se cruzaba con el texto | Carrusel en elipse estrecha y desplazado a la derecha |
+| Una rodaja tapaba el panel «Perfil de sabor» | El panel sube a la esquina superior derecha |
+
+---
+
 ## Pendiente
 - [ ] Comprobar en un navegador real (con tarjeta gráfica) cómo se ve todo y cómo suenan los efectos
-- [x] Publicar la web en GitHub Pages
-- [ ] Página **Sabores**
+- [ ] Activar GitHub Pages en el repositorio (Settings → Pages → Source: GitHub Actions)
+- [x] Página **Sabores**
 - [ ] Página **Tienda**
 - [ ] Páginas de la fase 2: Producto, Historia, Crew y Contacto
 - [ ] Extras: página 404 con la lata cayendo

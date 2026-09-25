@@ -23,7 +23,8 @@ export function applyPoke(object) {
 }
 
 export class Poke {
-  constructor(camera) {
+  // element: el lienzo sobre el que se calcula la posición del ratón (por defecto, toda la ventana)
+  constructor(camera, element = null) {
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2(10, 10);
@@ -32,7 +33,8 @@ export class Poke {
     this.targets = [];
 
     window.addEventListener('pointermove', (e) => {
-      this.pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+      const r = element ? element.getBoundingClientRect() : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+      this.pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       this.move.set(e.movementX || 0, -(e.movementY || 0));
       this.moved = true;
     });

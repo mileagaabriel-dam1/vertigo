@@ -55,7 +55,23 @@ export function toast(message) {
 }
 
 // Enlaces internos con scroll suave y aviso en las páginas que aún no existen
+// Cambio de página: la ola de bebida tapa la pantalla y después se navega
+export function leavePage(url) {
+  const wipe = document.querySelector('.wipe');
+  if (!wipe) {
+    window.location.href = url;
+    return;
+  }
+  gsap.set(wipe, { display: 'block', visibility: 'visible', yPercent: 110 });
+  gsap.to(wipe, { yPercent: 0, duration: 0.7, ease: 'power3.in', onComplete: () => (window.location.href = url) });
+}
+
 export function initLinks(lenis) {
+  // Al volver con el botón "atrás" el navegador puede restaurar la página con la ola tapándola
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) gsap.set('.wipe', { yPercent: -115 });
+  });
+
   document.addEventListener('click', (e) => {
     const link = e.target.closest('a');
     if (!link) return;
@@ -65,6 +81,12 @@ export function initLinks(lenis) {
       return;
     }
     const href = link.getAttribute('href');
+    // Otra página de la web (sabores.html, index.html...) → transición con la ola
+    if (href && /^[w-]+.html(#.*)?$/.test(href) && !link.target && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      leavePage(link.href);
+      return;
+    }
     if (href && href.startsWith('#')) {
       e.preventDefault();
       lenis.scrollTo(href === '#top' ? 0 : href, { duration: 2.4 });
@@ -135,7 +157,7 @@ export function initCounters() {
 //  - tarjetas: se inclinan en 3D siguiendo al puntero,
 //  - letras del título grande: dan un saltito al tocarlas.
 const MAGNETIC = '.nav__links a, .nav__cta, .nav__sound, .nav__logo, .btn, .hero__badges span, .hero__scroll, .flavors__notes li, .footer__cols a';
-const TILT = '.stat';
+const TILT = '.stat, .compare__card';
 
 export function initMagnetic() {
   if (window.matchMedia('(pointer: coarse)').matches) return;

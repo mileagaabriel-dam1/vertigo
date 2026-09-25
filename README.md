@@ -30,9 +30,12 @@ Al subir cambios a la rama `main`, GitHub Actions compila la web y la publica so
 
 ```
 index.html              Página de inicio
+sabores.html            Página de Sabores (showroom 3D)
 public/assets/          Modelos 3D, HDRI y fotos de fruta (ver CREDITOS.md)
 src/
-  main.js               Arranque: carga, scroll suave e intro
+  main.js               Arranque de la página de inicio
+  common.js             Lo que comparten todas las páginas (scroll, sonido, cursor, enlaces)
+  pages/sabores.js      Arranque de la página de Sabores
   loader.js             Pantalla de carga (espiral, palabra que se llena, ola de salida)
   story.js              "Director": mueve la escena 3D según el punto del scroll
   sections.js           Animaciones de texto de cada sección
@@ -46,7 +49,7 @@ src/
 ## Páginas
 
 - [x] Inicio
-- [ ] Sabores
+- [x] Sabores (`sabores.html`)
 - [ ] Producto / ficha
 - [ ] Nuestra historia
 - [ ] Vértigo Crew / eventos

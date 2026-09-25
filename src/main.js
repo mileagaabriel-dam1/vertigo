@@ -1,52 +1,18 @@
 import './styles/main.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
 
-import { Sound } from './audio.js';
+import { setupPage } from './common.js';
 import { Loader } from './loader.js';
 import { FLAVORS } from './data/flavors.js';
 import { Stage } from './three/stage.js';
 import { createDirector } from './story.js';
 import { initSections, initFlavorPanel } from './sections.js';
-import { initCursor, initLinks, initMagnetic, initMarquee, splitChars } from './ui.js';
+import { splitChars } from './ui.js';
 
-gsap.registerPlugin(ScrollTrigger);
-
-// Solo en desarrollo: acceso a GSAP desde la consola para depurar animaciones
-if (import.meta.env.DEV) {
-  window.gsap = gsap;
-  // ?slow=0.2 → todas las animaciones a cámara lenta (para revisar transiciones)
-  const slow = Number(new URLSearchParams(location.search).get('slow'));
-  if (slow) gsap.globalTimeline.timeScale(slow);
-}
-
-if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-window.scrollTo(0, 0);
-
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// Scroll suave sincronizado con GSAP
-const lenis = new Lenis({ lerp: reduceMotion ? 1 : 0.085, wheelMultiplier: 0.9 });
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add((time) => lenis.raf(time * 1000));
-gsap.ticker.lagSmoothing(0);
-lenis.stop();
-
-const sound = new Sound();
-const soundButton = document.querySelector('.js-sound');
-soundButton.addEventListener('click', () => sound.toggle());
-sound.onChange((on) => {
-  soundButton.classList.toggle('is-on', on);
-  soundButton.setAttribute('aria-pressed', String(on));
-  soundButton.setAttribute('aria-label', on ? 'Silenciar' : 'Activar sonido');
-});
-
+// Las letras del título se separan antes de activar los efectos del ratón (saltan al tocarlas)
 splitChars(document.querySelector('.hero__title'));
-initCursor();
-initLinks(lenis);
-initMarquee(lenis);
-initMagnetic();
+const { lenis, sound } = setupPage();
 
 boot();
 
