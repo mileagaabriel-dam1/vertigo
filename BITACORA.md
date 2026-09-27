@@ -11,11 +11,11 @@ Las entradas más recientes van al final.
 |---|---|
 | **Proyecto** | Web de una marca ficticia de bebida energética de cítricos |
 | **Marca** | Vértigo, «Energía cítrica en caída libre» |
-| **Tecnologías** | HTML, CSS, JavaScript, Vite, Three.js, GSAP con ScrollTrigger, Lenis y Web Audio API |
-| **Carpeta** | `C:\Vértigo` |
+| **Tecnologías** | HTML, CSS, JavaScript, Vite, Three.js, GSAP (ScrollTrigger, Draggable e InertiaPlugin), Lenis y Web Audio API |
+| **Carpeta** | `C:\Vértigo` (Windows, sesiones 1-6) · `~/vertigo` (Mac, desde la sesión 7) |
 | **Repositorio** | https://github.com/mileagaabriel-dam1/vertigo |
 | **Web publicada** | https://mileagaabriel-dam1.github.io/vertigo/ |
-| **Estado** | Página de inicio terminada, con 3D realista (fruta escaneada, fotos reales, bebida), animaciones y sonido |
+| **Estado** | Seis páginas terminadas: Inicio, Sabores, Historia, Tienda, Producto y Crew. Faltan Contacto y la 404 |
 
 ---
 
@@ -389,9 +389,29 @@ La web compilada ocupa unos 7,5 MB, casi todo texturas de fruta y el HDRI.
 
 ---
 
+## 26-27/09/2026 · Entorno de trabajo en el Mac y subida a GitHub
+
+### Entorno
+- El proyecto pasó a un Mac que no tenía Node.js ni Homebrew. Se instaló **Node.js 24 (LTS)** en la carpeta del usuario (`~/.local/node`, sin permisos de administrador), comprobando la descarga con su suma SHA-256, y se añadió al `PATH` en `~/.zshrc`. Con eso funcionan `npm run dev` (http://localhost:5173) y `npm run build`.
+- Git y Python llegaron con las herramientas de desarrollo de Apple (Xcode Command Line Tools).
+- Para revisar el trabajo sin un navegador delante se usó **Playwright** (Chromium sin ventana), instalado en una carpeta temporal, fuera del proyecto: capturas de cada página en escritorio (1440×900) y móvil (390×844), pruebas de las interacciones (tienda, carrito, crew) y la canción renderizada sin sonido para medir su volumen. El 3D ahí se dibuja sin tarjeta gráfica, así que los tiempos de carga de esas pruebas no son los reales.
+
+### Música: cómo se llegó a la canción actual
+- Sesión 7: la canción house de 120 BPM era demasiado fuerte. Primero se probó una versión chill / lo-fi a 92 BPM con la misma melodía, pero no convenció, y se sustituyó por una canción nueva: el tema **tropical suave** en Re mayor que suena ahora (ver sesiones 8 y 11).
+
+### Subida a GitHub
+- La carpeta del Mac no era un repositorio: se conectó a `mileagaabriel-dam1/vertigo` conservando su historial (el último commit subido era el de la página de Sabores).
+- Nombre y email de Git configurados solo para este proyecto.
+- Commit `8001bdb` «Páginas de Historia, Tienda, Producto y Crew, carrito y mejoras generales» con los 45 cambios de las sesiones 7 a 11 (las 4 texturas de 2048 px aparecen como borradas porque se sustituyeron por las de 1024 px).
+- **El `git push` no se pudo hacer desde el asistente**: GitHub pide iniciar sesión y hay que hacerlo a mano con un token personal (ver pendientes).
+
+---
+
 ## Pendiente
-- [ ] Comprobar en un navegador real (con tarjeta gráfica) cómo se ve todo y cómo suenan los efectos
-- [ ] Activar GitHub Pages en el repositorio (Settings → Pages → Source: GitHub Actions)
+- [ ] **Subir el commit a GitHub**: `git push origin main` desde la carpeta del proyecto. Usuario `mileagaabriel-dam1` y, como contraseña, un token (GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic), con los permisos `repo` y `workflow`)
+- [ ] Activar GitHub Pages en el repositorio (Settings → Pages → Source: GitHub Actions) y comprobar que la web publicada responde
+- [ ] Comprobar en un navegador real (con tarjeta gráfica) cómo se ve todo y cómo suenan la música y los efectos
+- [ ] Revisar los datos de la página de Producto: ingredientes, nutrición y ficha técnica son inventados; la cafeína de otras bebidas y el límite de 400 mg son valores orientativos de la EFSA puestos de memoria y hay que confirmarlos con la fuente
 - [x] Página **Sabores**
 - [x] Página **Historia**
 - [x] Página **Tienda**
@@ -399,3 +419,5 @@ La web compilada ocupa unos 7,5 MB, casi todo texturas de fruta y el HDRI.
 - [x] Página **Crew**
 - [ ] Página **Contacto**
 - [ ] Extras: página 404 con la lata cayendo
+- [ ] Accesibilidad: respetar «reducir movimiento» en las animaciones grandes (ahora solo se respeta en parte: scroll suave y algunas animaciones CSS)
+- [ ] Decidir qué hacer con los enlaces a Instagram, TikTok y YouTube del pie (ahora dicen «en construcción»; la marca es ficticia)
