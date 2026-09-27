@@ -8,7 +8,7 @@ import { FruitCluster } from './cluster.js';
 import { createFruitKits } from './fruit.js';
 import { loadAssets } from './assets.js';
 import { Poke } from './poke.js';
-import { createRenderer, applyEnvironment, studioLights, shadowWall, precompile } from './studio.js';
+import { createRenderer, adaptiveResolution, applyEnvironment, studioLights, shadowWall, precompile } from './studio.js';
 import { labelTexture, glowTexture, condensationTextures, brushedTexture } from './textures.js';
 
 // Escena 3D fija por encima del contenido: lata, bebida, fruta, burbujas, sombras y explosión.
@@ -26,6 +26,7 @@ export class Stage {
     this.mobile = window.innerWidth < 760;
 
     this.renderer = createRenderer(canvas);
+    this.adaptResolution = adaptiveResolution(this.renderer);
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
@@ -117,6 +118,7 @@ export class Stage {
   }
 
   render() {
+    this.adaptResolution();
     this.renderer.render(this.scene, this.camera);
   }
 }

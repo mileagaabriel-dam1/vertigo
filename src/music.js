@@ -1,48 +1,69 @@
 // Tema musical de Vértigo, sintetizado en tiempo real con la Web Audio API (no hay archivos de audio).
-// Estilo house / electro-pop a 120 BPM:
-//   batería (bombo a negras, palmas, charles), bajo a contratiempo, acordes con "bombeo" (sidechain)
-//   y un gancho melódico sobre Lam – Fa – Do – Sol, la progresión más pegadiza del pop.
-// Además reacciona al scroll: setTension() apaga la música antes de la explosión (build-up) y drop() la hace estallar.
+// Estilo tropical suave a 100 BPM, veraniego y tranquilo para escucharlo de fondo:
+//   shaker, bombo suave y clic de madera, bajo redondo, acordes de piano eléctrico a contratiempo
+//   y una melodía de marimba sobre Rem7 – Sim7 – Solmaj7 – La (en Re mayor).
+// Estructura (se repite cada 32 compases, después de 4 de intro):
+//   estrofa (8) → estribillo con arpegios y más percusión (8) → puente con otros acordes (8)
+//   → bajada sin batería (4) → vuelta a la estrofa con redoble (4).
+// Además reacciona al scroll: setTension() apaga la música antes de la explosión (build-up) y drop() la hace volver,
+// y muffle() la amortigua (como detrás de una puerta) mientras hay un panel abierto encima.
 
-const BPM = 120;
+const BPM = 100;
 // Volumen de la música (los efectos de sonido van aparte, un poco por encima)
-const MUSIC_VOLUME = 0.22;
+const MUSIC_VOLUME = 0.13;
 const STEP = 60 / BPM / 4; // semicorchea
 const midi = (n) => 440 * Math.pow(2, (n - 69) / 12);
 
-// Acordes (Lam, Fa, Do, Sol) y raíz del bajo de cada compás
+// Acordes (Remaj7, Sim7, Solmaj7, La6) y raíz del bajo de cada compás
 const CHORDS = [
-  [57, 60, 64],
-  [53, 57, 60],
-  [55, 60, 64],
-  [55, 59, 62],
+  [62, 66, 69, 73],
+  [59, 62, 66, 69],
+  [55, 59, 62, 66],
+  [57, 61, 64, 66],
 ];
-const BASS = [45, 41, 48, 43];
+const BASS = [38, 35, 31, 33];
 
-// Melodía: por compás, [paso, nota, duración en pasos]
+// Melodía de marimba: por compás, [paso, nota]
 const HOOK_A = [
-  [[0, 76, 2], [2, 76, 2], [4, 74, 2], [6, 72, 3], [10, 69, 2], [12, 72, 2], [14, 74, 2]],
-  [[0, 76, 4], [4, 72, 2], [6, 69, 5], [12, 67, 2], [14, 69, 2]],
-  [[0, 76, 2], [2, 76, 2], [4, 79, 2], [6, 76, 2], [8, 74, 2], [10, 72, 3], [14, 74, 2]],
-  [[0, 74, 4], [4, 71, 4], [8, 67, 6]],
+  [[0, 78], [3, 81], [6, 78], [8, 76], [10, 74], [14, 76]],
+  [[0, 74], [3, 71], [6, 74], [8, 76], [14, 78]],
+  [[0, 78], [3, 79], [6, 81], [10, 78], [12, 76], [14, 74]],
+  [[0, 76], [6, 73], [8, 69]],
 ];
-// Respuesta: los dos últimos compases cambian para cerrar la frase hacia arriba
+// Respuesta: los dos últimos compases suben y cierran la frase en Re
 const HOOK_B = [
   HOOK_A[0],
   HOOK_A[1],
-  [[0, 79, 2], [2, 76, 2], [4, 79, 2], [6, 81, 2], [8, 79, 2], [10, 76, 2], [12, 74, 2], [14, 72, 2]],
-  [[0, 74, 3], [4, 74, 2], [6, 76, 2], [8, 74, 3], [12, 71, 4]],
+  [[0, 83], [3, 81], [6, 78], [8, 81], [10, 83], [14, 81]],
+  [[0, 78], [4, 76], [6, 73], [8, 74]],
 ];
 
-const STABS = [3, 6, 10, 13];
-const BASS_STEPS = [
-  [2, 0, 2],
-  [6, 0, 2],
-  [10, 0, 1],
-  [11, 12, 1],
-  [14, 0, 2],
+// Puente: Mim7 – La7 – Fa#m7 – Sim7, con una melodía más lenta. Su último compás vuelve a La para regresar a casa
+const BRIDGE_CHORDS = [
+  [59, 62, 64, 67],
+  [57, 61, 64, 67],
+  [54, 57, 61, 64],
+  [59, 62, 66, 69],
 ];
-const HATS = [0.025, 0.014, 0.07, 0.014];
+const BRIDGE_BASS = [40, 33, 42, 35];
+const BRIDGE_HOOK = [
+  [[0, 79], [6, 78], [8, 76]],
+  [[0, 76], [8, 73]],
+  [[0, 73], [4, 76], [8, 81]],
+  [[0, 78], [8, 74]],
+];
+const TURNAROUND_HOOK = [[0, 76], [6, 78], [8, 81], [12, 79]];
+
+// Acordes a contratiempo (el "salto" típico del tropical)
+const CHORD_STEPS = [0, 3, 6, 10];
+// Bajo: [paso, intervalo sobre la raíz, duración en pasos]
+const BASS_STEPS = [
+  [0, 0, 3],
+  [6, 0, 2],
+  [10, 7, 2],
+  [12, 0, 3],
+];
+const SHAKER = [0.006, 0.003, 0.011, 0.003];
 
 function impulse(ctx, seconds = 2.2) {
   const length = ctx.sampleRate * seconds;
@@ -70,33 +91,39 @@ export class Music {
     this.tensionFilter.Q.value = 1.2;
     this.tensionFilter.connect(this.out);
 
+    // Amortiguado: cierra los agudos cuando hay un panel abierto (carrito)
+    this.muffleFilter = ctx.createBiquadFilter();
+    this.muffleFilter.type = 'lowpass';
+    this.muffleFilter.frequency.value = 20000;
+    this.muffleFilter.connect(this.tensionFilter);
+
     this.introFilter = ctx.createBiquadFilter();
     this.introFilter.type = 'lowpass';
     this.introFilter.frequency.value = 20000;
-    this.introFilter.connect(this.tensionFilter);
+    this.introFilter.connect(this.muffleFilter);
     this.bus = this.introFilter;
 
-    // Los acordes pasan por un "bombeo" que baja el volumen en cada bombo
+    // Los acordes pasan por un "bombeo" que baja un poco el volumen en cada bombo
     this.pump = ctx.createGain();
     this.pump.connect(this.bus);
 
-    // Eco a 3/16 para la melodía y reverb general
+    // Eco a 3/16 para la marimba y reverb general
     this.delay = ctx.createDelay(1);
     this.delay.delayTime.value = STEP * 3;
     const feedback = ctx.createGain();
-    feedback.gain.value = 0.32;
+    feedback.gain.value = 0.3;
     const delayTone = ctx.createBiquadFilter();
     delayTone.type = 'lowpass';
-    delayTone.frequency.value = 3200;
+    delayTone.frequency.value = 2800;
     this.delay.connect(delayTone).connect(feedback).connect(this.delay);
     const delayWet = ctx.createGain();
-    delayWet.gain.value = 0.28;
+    delayWet.gain.value = 0.3;
     delayTone.connect(delayWet).connect(this.bus);
 
     this.reverb = ctx.createConvolver();
     this.reverb.buffer = impulse(ctx);
     const reverbWet = ctx.createGain();
-    reverbWet.gain.value = 0.2;
+    reverbWet.gain.value = 0.22;
     this.reverb.connect(reverbWet).connect(this.bus);
 
     // Subida de ruido para el build-up
@@ -156,32 +183,70 @@ export class Music {
   playStep(step, t) {
     const bar = Math.floor(step / 16);
     const s = step % 16;
-    const chord = bar % 4;
-    const intro = bar < 4;
-    const phraseB = Math.floor(bar / 4) % 2 === 1;
 
-    // Batería
-    if (s % 4 === 0) this.kick(t);
-    if (!intro && (s === 4 || s === 12)) this.clap(t);
-    // Redoble de palmas al final de cada frase de 8 compases
-    if (!intro && bar % 8 === 7 && s >= 13) this.clap(t, 0.25 + (s - 13) * 0.1);
-    this.hat(t, HATS[s % 4] * (intro ? 0.7 : 1), s === 14 && !intro);
-
-    // Bajo
-    for (const [at, octave, len] of BASS_STEPS) {
-      if (s === at) this.bass(t, BASS[chord] + octave, len * STEP);
+    // Intro: shaker, colchón y acordes; el bajo entra en la segunda mitad para preparar la estrofa
+    if (bar < 4) {
+      this.shaker(t, SHAKER[s % 4] * 0.8);
+      if (s === 0) this.pad(t, CHORDS[bar], 16 * STEP);
+      if (CHORD_STEPS.includes(s)) this.keys(t, CHORDS[bar], s === 0 ? 1.2 : 0.9);
+      if (bar >= 2) {
+        for (const [at, interval, len] of BASS_STEPS) {
+          if (s === at) this.bass(t, BASS[bar] + interval, len * STEP);
+        }
+      }
+      return;
     }
 
-    // Acordes
-    if (STABS.includes(s)) this.stab(t, CHORDS[chord]);
+    const c = (bar - 4) % 32; // compás dentro del ciclo de la canción
+    const section = c < 8 ? 'verse' : c < 16 ? 'chorus' : c < 24 ? 'bridge' : c < 28 ? 'break' : 'verse';
+    const chord = c % 4;
+    const turnaround = c === 23;
+    const inBridge = section === 'bridge' && !turnaround;
+    const notes = inBridge ? BRIDGE_CHORDS[chord] : CHORDS[chord];
+    const root = inBridge ? BRIDGE_BASS[chord] : BASS[chord];
+    const drums = section !== 'break';
 
-    // Melodía (entra después de la intro)
-    if (!intro) {
-      const hook = phraseB ? HOOK_B : HOOK_A;
-      for (const [at, note, len] of hook[chord]) {
-        if (s === at) this.lead(t, note, len * STEP);
+    // Percusión
+    this.shaker(t, SHAKER[s % 4] * (section === 'chorus' ? 1.3 : drums ? 1 : 0.5));
+    if (drums) {
+      const kicks = section === 'chorus' ? [0, 8, 11] : [0, 8];
+      if (kicks.includes(s)) this.kick(t);
+      if (s === 4 || s === 12 || (s === 14 && bar % 2 === 1)) this.wood(t);
+    }
+    // Redoble de madera en el último compás del ciclo, para volver con fuerza
+    if (c === 31 && s >= 8) this.wood(t, 0.5 + (s - 8) * 0.08);
+    // Platillo suave al empezar el estribillo, el puente y la vuelta
+    if (s === 0 && (c === 8 || c === 16 || c === 28 || (c === 0 && bar > 4))) this.cymbal(t);
+
+    // Bajo (descansa en la bajada; en el estribillo añade saltos a la octava que empujan)
+    if (drums) {
+      for (const [at, interval, len] of BASS_STEPS) {
+        if (s === at) this.bass(t, root + interval, len * STEP);
+      }
+      if (section === 'chorus' && (s === 3 || s === 15)) this.bass(t, root + 12, STEP);
+    }
+
+    // Acordes: a contratiempo, o un colchón largo en la bajada
+    if (section === 'break') {
+      if (s === 0) this.pad(t, notes, 16 * STEP);
+      if (s === 0 || s === 8) this.keys(t, notes, 0.5);
+    } else if (CHORD_STEPS.includes(s)) {
+      const lift = section === 'chorus' ? 1.3 : 1;
+      this.keys(t, notes, (s === 0 ? 1 : 0.7) * lift);
+    }
+
+    // Melodía
+    let hook = null;
+    if (section === 'verse' || section === 'chorus') hook = (c % 8 < 4 ? HOOK_A : HOOK_B)[chord];
+    if (section === 'bridge') hook = turnaround ? TURNAROUND_HOOK : BRIDGE_HOOK[chord];
+    if (section === 'break' && s === 0) this.marimba(t, HOOK_A[chord][0][1]);
+    if (hook) {
+      for (const [at, note] of hook) {
+        if (s === at) this.marimba(t, note);
       }
     }
+    // Estribillo: arpegio de campanitas por encima de la melodía
+    if (section === 'chorus' && s % 4 === 2) this.bell(t, notes[(s >> 2) % notes.length] + 12);
   }
 
   // ---------- Instrumentos ----------
@@ -207,113 +272,140 @@ export class Music {
     src.stop(t + attack + decay + 0.05);
   }
 
+  // Sinusoide con envolvente: la pieza básica de casi todos los instrumentos
+  sine(t, freq, attack, peak, decay, destination) {
+    const o = this.ctx.createOscillator();
+    o.frequency.value = freq;
+    o.connect(this.env(t, attack, peak, decay, destination));
+    o.start(t);
+    o.stop(t + attack + decay + 0.05);
+  }
+
+  // Bombo suave y redondo, sin clic
   kick(t) {
     const osc = this.ctx.createOscillator();
-    osc.frequency.setValueAtTime(165, t);
-    osc.frequency.exponentialRampToValueAtTime(45, t + 0.12);
-    osc.connect(this.env(t, 0.002, 0.75, 0.34, this.bus));
+    osc.frequency.setValueAtTime(105, t);
+    osc.frequency.exponentialRampToValueAtTime(42, t + 0.14);
+    osc.connect(this.env(t, 0.006, 0.36, 0.28, this.bus));
     osc.start(t);
-    osc.stop(t + 0.45);
-    this.noiseHit(t, 'highpass', 4000, 0.7, 0.001, 0.18, 0.012);
+    osc.stop(t + 0.4);
 
-    // Bombeo: los acordes bajan de volumen con cada bombo y vuelven a subir
     this.pump.gain.cancelScheduledValues(t);
-    this.pump.gain.setValueAtTime(0.25, t);
-    this.pump.gain.linearRampToValueAtTime(1, t + 0.2);
+    this.pump.gain.setValueAtTime(0.75, t);
+    this.pump.gain.linearRampToValueAtTime(1, t + 0.25);
   }
 
-  clap(t, level = 0.32) {
-    for (let i = 0; i < 3; i++) this.noiseHit(t + i * 0.011, 'bandpass', 1400, 0.9, 0.001, level, 0.03);
-    this.noiseHit(t + 0.03, 'bandpass', 1300, 0.7, 0.002, level * 0.7, 0.16, this.reverb);
-    this.noiseHit(t + 0.03, 'bandpass', 1300, 0.7, 0.002, level * 0.6, 0.14);
+  // Clic de madera (tipo claves), en lugar de caja
+  wood(t, level = 1) {
+    this.sine(t, 1750, 0.001, 0.05 * level, 0.035, this.bus);
+    this.sine(t, 2600, 0.001, 0.02 * level, 0.02, this.reverb);
   }
 
-  hat(t, level, open) {
-    this.noiseHit(t, 'highpass', 8000, 0.6, 0.001, open ? level * 0.8 : level, open ? 0.22 : 0.035);
+  // Platillo muy suave (ruido agudo con cola larga)
+  cymbal(t) {
+    this.noiseHit(t, 'highpass', 7000, 0.6, 0.005, 0.03, 1.2);
+    this.noiseHit(t, 'highpass', 6000, 0.6, 0.005, 0.02, 1.6, this.reverb);
   }
 
-  bass(t, note, duration) {
-    const out = this.env(t, 0.005, 0.32, duration * 0.9, this.bus);
+  // Campanita para los arpegios del estribillo
+  bell(t, note) {
+    const f = midi(note);
+    const out = this.ctx.createGain();
+    out.connect(this.bus);
+    out.connect(this.delay);
+    this.sine(t, f, 0.002, 0.05, 0.3, out);
+    this.sine(t, f * 3, 0.001, 0.012, 0.08, out);
+  }
+
+  // Colchón para la bajada: triángulos un poco desafinados, entrada y salida lentas
+  pad(t, notes, duration) {
+    const out = this.ctx.createGain();
+    out.gain.setValueAtTime(0.0001, t);
+    out.gain.exponentialRampToValueAtTime(0.02, t + 0.8);
+    out.gain.setValueAtTime(0.02, t + duration - 0.4);
+    out.gain.exponentialRampToValueAtTime(0.0001, t + duration + 0.6);
     const filter = this.ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.Q.value = 6;
-    filter.frequency.setValueAtTime(1100, t);
-    filter.frequency.exponentialRampToValueAtTime(220, t + duration);
+    filter.frequency.value = 1200;
     filter.connect(out);
-    const saw = this.ctx.createOscillator();
-    saw.type = 'sawtooth';
-    saw.frequency.value = midi(note);
-    const sub = this.ctx.createOscillator();
-    sub.frequency.value = midi(note - 12);
-    const subGain = this.ctx.createGain();
-    subGain.gain.value = 0.9;
-    saw.connect(filter);
-    sub.connect(subGain).connect(out);
-    for (const o of [saw, sub]) {
-      o.start(t);
-      o.stop(t + duration + 0.05);
-    }
-  }
-
-  stab(t, notes) {
-    const out = this.env(t, 0.004, 0.065, 0.26, this.pump);
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(3200, t);
-    filter.frequency.exponentialRampToValueAtTime(700, t + 0.25);
-    filter.connect(out);
-    const send = this.ctx.createGain();
-    send.gain.value = 0.5;
-    filter.connect(send).connect(this.reverb);
+    out.connect(this.bus);
+    out.connect(this.reverb);
     for (const n of notes) {
-      for (const detune of [-9, 9]) {
+      for (const detune of [-7, 7]) {
         const o = this.ctx.createOscillator();
-        o.type = 'sawtooth';
+        o.type = 'triangle';
         o.frequency.value = midi(n);
         o.detune.value = detune;
         o.connect(filter);
         o.start(t);
-        o.stop(t + 0.32);
+        o.stop(t + duration + 0.7);
       }
     }
   }
 
-  lead(t, note, duration) {
-    const out = this.env(t, 0.01, 0.075, duration * 0.95 + 0.08, this.bus);
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.Q.value = 3;
-    filter.frequency.setValueAtTime(4200, t);
-    filter.frequency.exponentialRampToValueAtTime(1600, t + duration + 0.1);
-    filter.connect(out);
-    filter.connect(this.delay);
-    const send = this.ctx.createGain();
-    send.gain.value = 0.35;
-    filter.connect(send).connect(this.reverb);
+  shaker(t, level) {
+    this.noiseHit(t, 'bandpass', 9000, 1, 0.006, level, 0.04);
+  }
 
-    // Onda cuadrada + sierra una octava arriba, con un pequeño vibrato
-    const vibrato = this.ctx.createOscillator();
-    vibrato.frequency.value = 5.5;
-    const depth = this.ctx.createGain();
-    depth.gain.value = 6;
-    vibrato.connect(depth);
-    const voices = [
-      ['square', 0, 0.8],
-      ['sawtooth', 12, 0.25],
-    ].map(([type, octave, level]) => {
-      const o = this.ctx.createOscillator();
-      o.type = type;
-      o.frequency.value = midi(note + octave);
-      depth.connect(o.detune);
-      const g = this.ctx.createGain();
-      g.gain.value = level;
-      o.connect(g).connect(filter);
-      return o;
-    });
-    for (const o of [vibrato, ...voices]) {
+  // Bajo de onda senoidal con un poco de cuerpo
+  bass(t, note, duration) {
+    const out = this.env(t, 0.015, 0.28, duration * 0.9, this.bus);
+    const sine = this.ctx.createOscillator();
+    sine.frequency.value = midi(note);
+    const body = this.ctx.createOscillator();
+    body.type = 'triangle';
+    body.frequency.value = midi(note + 12);
+    const bodyGain = this.ctx.createGain();
+    bodyGain.gain.value = 0.2;
+    sine.connect(out);
+    body.connect(bodyGain).connect(out);
+    for (const o of [sine, body]) {
       o.start(t);
-      o.stop(t + duration + 0.2);
+      o.stop(t + duration + 0.1);
     }
+  }
+
+  // Piano eléctrico: fundamental + armónico suave que se apaga antes (sonido "de campana" cálido)
+  keys(t, notes, level) {
+    const send = this.ctx.createGain();
+    send.gain.value = 0.5;
+    send.connect(this.reverb);
+    for (const n of notes) {
+      const f = midi(n);
+      this.sine(t, f, 0.004, 0.022 * level, 0.5, this.pump);
+      this.sine(t, f, 0.004, 0.012 * level, 0.5, send);
+      this.sine(t, f * 2, 0.002, 0.006 * level, 0.12, this.pump);
+    }
+  }
+
+  // Marimba: golpe corto con un armónico agudo (x4) que da el sonido de madera
+  marimba(t, note) {
+    const f = midi(note);
+    const out = this.ctx.createGain();
+    out.connect(this.bus);
+    out.connect(this.delay);
+    const send = this.ctx.createGain();
+    send.gain.value = 0.4;
+    out.connect(send).connect(this.reverb);
+    this.sine(t, f, 0.003, 0.09, 0.5, out);
+    this.sine(t, f * 4, 0.001, 0.02, 0.05, out);
+  }
+
+  // Como detrás de una puerta: se apagan los agudos (y vuelven al quitarlo)
+  muffle(on) {
+    this.muffleFilter.frequency.setTargetAtTime(on ? 650 : 20000, this.ctx.currentTime, on ? 0.12 : 0.25);
+  }
+
+  // Subidón: el volumen sube un momento (explosión, pedido hecho...) y vuelve solo a su nivel
+  swell(boost = 1.6, hold = 1.2) {
+    if (!this.playing) return;
+    const gain = this.out.gain;
+    const t = this.ctx.currentTime;
+    gain.cancelScheduledValues(t);
+    gain.setValueAtTime(gain.value, t);
+    gain.linearRampToValueAtTime(MUSIC_VOLUME * boost, t + 0.2);
+    gain.setValueAtTime(MUSIC_VOLUME * boost, t + 0.2 + hold);
+    gain.linearRampToValueAtTime(MUSIC_VOLUME, t + 0.2 + hold + 1.6);
   }
 
   // ---------- Reacción al scroll ----------
@@ -325,20 +417,21 @@ export class Music {
     const now = this.ctx.currentTime;
     this.tensionFilter.frequency.setTargetAtTime(20000 * Math.pow(280 / 20000, t), now, 0.05);
     this.riserFilter.frequency.setTargetAtTime(400 + t * 5600, now, 0.05);
-    this.riserGain.gain.setTargetAtTime(this.playing ? t * t * 0.12 : 0, now, 0.05);
+    this.riserGain.gain.setTargetAtTime(this.playing ? t * t * 0.05 : 0, now, 0.05);
   }
 
-  // La explosión: platillo, se abre el filtro de golpe y la música vuelve a tope
+  // La explosión: platillo suave y el filtro se vuelve a abrir poco a poco
   drop() {
     if (!this.playing) return;
     const t = this.ctx.currentTime;
     this.tension = 0;
     this.tensionFilter.frequency.cancelScheduledValues(t);
-    this.tensionFilter.frequency.setValueAtTime(20000, t);
+    this.tensionFilter.frequency.setValueAtTime(this.tensionFilter.frequency.value, t);
+    this.tensionFilter.frequency.exponentialRampToValueAtTime(20000, t + 0.8);
     this.riserGain.gain.cancelScheduledValues(t);
     this.riserGain.gain.setValueAtTime(0, t);
-    this.noiseHit(t, 'highpass', 5000, 0.5, 0.002, 0.14, 1.6, this.out);
-    this.noiseHit(t, 'highpass', 5000, 0.5, 0.002, 0.12, 2.2, this.reverb);
+    this.noiseHit(t, 'highpass', 6000, 0.5, 0.01, 0.05, 1.6, this.out);
+    this.noiseHit(t, 'highpass', 6000, 0.5, 0.01, 0.05, 2.2, this.reverb);
     this.kick(t);
   }
 }

@@ -70,17 +70,17 @@
     {
       "mimeType": "image/jpeg",
       "name": "food_lime_01_nor_gl",
-      "uri": "textures/food_lime_01_nor_gl_2k.jpg"
+      "uri": "textures/food_lime_01_nor_gl_1k.jpg"
     },
     {
       "mimeType": "image/jpeg",
       "name": "food_lime_01_diff",
-      "uri": "textures/food_lime_01_diff_2k.jpg"
+      "uri": "textures/food_lime_01_diff_1k.jpg"
     },
     {
       "mimeType": "image/jpeg",
       "name": "food_lime_01_rough",
-      "uri": "textures/food_lime_01_rough_2k.jpg"
+      "uri": "textures/food_lime_01_rough_1k.jpg"
     }
   ],
   "accessors": [

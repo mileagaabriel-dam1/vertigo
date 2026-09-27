@@ -12,6 +12,14 @@ const SLICE_PHOTOS = {
   bloodOrange: 'blood-orange',
 };
 
+// Solo el HDRI del estudio (para escenas sin fruta, como la caja de la tienda)
+export function loadEnvironment(onProgress = () => {}) {
+  const loader = new HDRLoader();
+  return new Promise((resolve, reject) =>
+    loader.load('assets/hdri/studio_small_09_1k.hdr', resolve, (e) => e.total && onProgress(e.loaded / e.total), reject),
+  ).then((hdr) => ({ hdr }));
+}
+
 export function loadAssets(onProgress = () => {}) {
   const manager = new THREE.LoadingManager();
   manager.onProgress = (_url, loaded, total) => onProgress(loaded / total);

@@ -267,10 +267,135 @@ La web compilada ocupa unos 7,5 MB, casi todo texturas de fruta y el HDRI.
 
 ---
 
+## 26/09/2026 · Sesión 7: rendimiento, música nueva y página de Historia
+
+### Rendimiento
+- Texturas de los escaneos de limón y lima reducidas de 2048 a 1024 px: de 2,8 MB a 0,9 MB (la fruta se ve pequeña, no se nota).
+- **Resolución adaptativa** del 3D (`adaptiveResolution` en `src/three/studio.js`): si el ordenador no llega a unos 50 fps, baja la resolución poco a poco hasta 1x. Las burbujas ajustan su tamaño a la resolución de cada momento.
+- El destello de la explosión ya no toca el estilo en cada fotograma, solo cuando cambia.
+
+### Canción nueva (`src/music.js`)
+- La canción house de 120 BPM era demasiado fuerte. Ahora es un tema **tropical suave** a 100 BPM en Re mayor: marimba, acordes de piano eléctrico a contratiempo, shaker, bombo suave, clic de madera y bajo redondo.
+- Volumen de la música más bajo (de 0,22 a 0,13). La reacción al scroll se mantiene: se apaga en la cuenta atrás y vuelve suave tras la explosión.
+
+### Página de Historia (`historia.html`)
+- **Portada 3D** (`src/three/grove.js`): el limón escaneado en el centro, rodeado de rodajas, limas y menta que flotan, se pueden empujar con el ratón y se separan al hacer scroll.
+- **El porqué:** texto que se enciende palabra a palabra y contadores (3 amigos, 1 cocina, 47 recetas, 0 inversores).
+- **Cronología horizontal:** la sección se fija y seis capítulos de colores pasan de lado con el scroll (de marzo de 2024 a hoy). Cada uno tiene su dibujo animado: rodaja de limón, los 47 intentos que se tachan hasta dar con la receta, 4 °C con ondas de frío, la primera lata que se dibuja sola, los cuatro sabores y la espiral de la marca. Año grande, barra de progreso y sonido al cambiar de capítulo.
+- **Del árbol a la lata:** cinco pasos (cosecha, exprimido en frío, mezcla, burbujas, lata); el número grande cambia y un tubo se llena de bebida.
+- **Radar de origen:** cada ingrediente está en su dirección real desde Barcelona y a una distancia en escala logarítmica. Las distancias y rumbos se calculan con la fórmula del haversine a partir de las coordenadas. Al pasar el ratón por un ingrediente se ilumina su ruta.
+- **Compromisos**, la regla de oro («Si algún día deja de saber a fruta, cerramos») que se llena de amarillo al leerla, y llamada a la página de Sabores.
+- Revisada con capturas en escritorio (1440×900) y móvil (390×844).
+- Los enlaces «Historia» del menú y del pie ya llevan a la página nueva.
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| En el radar, el ingrediente más cercano (hierbabuena, a 9 km) tapaba el nombre de Barcelona | La etiqueta de Barcelona sube por encima del centro |
+| Las burbujas del tubo del proceso se veían también en la parte vacía | El tubo se recorta con `clip-path` en vez de escalarse, y las burbujas van dentro del líquido |
+| En móvil, la fruta de la portada quedaba debajo del texto | Se sube y se hace un poco más pequeña |
+
+---
+
+## 26/09/2026 · Sesión 8: Tienda, carrito y música entre páginas
+
+### Música continua y subidones
+- La misma canción en todas las páginas, **sin empezar de cero**: se guarda si sonaba y por qué compás iba (`sessionStorage`). En la página nueva sigue desde ahí en cuanto se toca la pantalla o una tecla (los navegadores no dejan sonar nada antes), con un aviso para saberlo. Quien entra «sin sonido» no la oye volver sola.
+- **Subidones de volumen** (`swell()` en `src/music.js`): la música sube un momento y vuelve sola a su nivel. Suenan en la explosión del inicio, al cambiar de sabor, al llegar al capítulo «Hoy» y al terminar de leer la regla de oro en Historia, al llenar la caja de la tienda, al añadir al carrito y, el más fuerte, al hacer el pedido.
+- Efectos nuevos: lata cayendo en la caja (golpe de cartón + tintineo), añadir al carrito (burbuja + chispa) y fanfarria de marimba al hacer el pedido.
+
+### Página de Tienda (`tienda.html`)
+- **Arma tu pack en 3D** (`src/three/crate.js`): caja de cartón kraft con el logo impreso y separadores. Se elige 6, 12 o 24 latas (−10 % y −20 %); cada lata que se añade cae dentro con un rebote y suena al tocar el fondo. Haciendo clic en una lata de la caja se saca. Botones para rellenar al azar y vaciar. La cámara se aleja o acerca según el tamaño.
+- **Packs listos:** degustación (2 de cada) y un pack de 12 de cada sabor, con latas dibujadas en CSS que saltan al pasar el ratón.
+- **Suscripción:** caja de 12 o 24, cada 2 o 4 semanas, con un 15 % extra; calcula el ahorro al año y las fechas de las tres próximas entregas.
+- **Envíos y devoluciones** con contadores y **preguntas frecuentes** que se abren con animación.
+- Todo el texto deja claro que es una tienda de prueba: no se piden datos de pago, no se cobra nada y no se envía nada.
+
+### Carrito en todas las páginas (`src/cart.js`, `src/cartDrawer.js`)
+- Botón con contador en la navegación y panel lateral: cantidades, quitar, subtotal, envío (gratis desde 25 €, con una barra que se llena) y total.
+- Se guarda en el navegador: no se pierde al cambiar de página y se sincroniza entre pestañas.
+- «Hacer el pedido» llena la pantalla de bebida con burbujas y muestra un número de pedido de prueba.
+- En Sabores, «Añadir al carrito» ya añade un pack de 6 del sabor elegido.
+- Todos los botones «Comprar» e «Ir a la tienda» llevan a la tienda.
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| En móvil la caja 3D se salía por la izquierda | En pantallas estrechas la cámara se aleja más |
+
+---
+
+## 27/09/2026 · Sesión 9: página de Producto
+
+### Página de Producto (`producto.html`)
+- **Anatomía de la lata en 3D** (`src/three/anatomy.js`): la sección se queda fija y, con el scroll, la lata pasa por cuatro fases:
+  1. entera, girando junto al título;
+  2. **por piezas**: anilla, remache, ranura, tapa y base se separan y cada una tiene su etiqueta, que sigue a la pieza en pantalla;
+  3. **rayos X**: la etiqueta se vuelve transparente y la lata se llena de bebida desde abajo, con burbujas subiendo y etiquetas de 250 ml, gas y zumo (subidón de música al llenarse);
+  4. se cierra otra vez.
+  Indicador de fases a la derecha, barra de progreso y botones para cambiar de sabor (cambian la etiqueta, la bebida de dentro y la luz).
+- **Lo que hay dentro:** gráfico de barras con los cinco ingredientes en % de la lata y lo que no lleva (tachado).
+- **Información nutricional** con estilo de etiqueta real: se cambia entre 100 ml y la lata entera y los números cuentan hasta el nuevo valor. Los azúcares se aclaran como «de la fruta».
+- **Cafeína:** gráfico comparando la lata con café, espresso, té, cola y chocolate (valores orientativos de la EFSA), con la barra de Vértigo en amarillo y el resto en gris, tooltip al pasar el ratón. Al lado, calculadora «¿Cuánta llevas hoy?» contra el límite de 400 mg de la EFSA, con barra de colores de estado (bien / cerca del límite / por encima), siempre con icono y texto.
+- **Ficha técnica:** plano azul de la lata con cotas que se dibuja solo al llegar y tabla de especificaciones.
+- Los colores de los gráficos se comprobaron con el validador de paletas: el amarillo frente al gris pasa el contraste y la separación para daltonismo.
+- Todos los enlaces «Producto» del menú y del pie llevan a la página nueva.
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| Las barras de los gráficos no se veían | La variable CSS del ancho llevaba `%` y rompía el `calc()`; ahora es un número |
+| La etiqueta de la anilla salía fuera de la pantalla | Se sumaba dos veces la altura de la pieza; ahora solo cuenta lo que se separa |
+| La lista de fases no se veía | La animación de entrada dejaba una opacidad fija en cada línea; ahora se anima la lista entera |
+| En móvil las etiquetas tapaban la lata y se pisaban | La lata se aparta a la izquierda, todas las etiquetas salen por la derecha y solo se ve el título |
+
+---
+
+## 27/09/2026 · Sesión 10: página Crew
+
+### Página Crew (`crew.html`)
+- **Pared de pegatinas:** 14 pegatinas troqueladas (logo, rodajas dibujadas, latas, «Sin frenos», estrella, bocadillo, ticket…) caen al entrar y se pueden **arrastrar y lanzar** con inercia (GSAP Draggable + InertiaPlugin, gratis desde GSAP 3.13); rebotan en los bordes y suenan al pararse.
+- **Qué es:** texto y contadores (personas, planes, barrios, 0 € de cuota).
+- **Agenda:** siete planes (running, noche de estudio, DJ set, escalada, taller de ilustración, vóley y open mic). Las fechas se calculan a partir de hoy, así que siempre salen próximas. Filtros por tipo, barra de plazas, «Me apunto» (o lista de espera si está completo) que se recuerda en el navegador y botón **+ Calendario** que descarga un archivo `.ics` para añadirlo al móvil u ordenador.
+- **Niveles:** barra deslizante «¿a cuántos planes irías en un año?» que enciende los niveles Gota, Burbuja, Espiral y Vértigo y enseña sus ventajas (subidón de música al llegar al último).
+- **Caras del crew:** seis personajes ficticios con avatar dibujado (iniciales, espiral y color de su sabor); la tarjeta se gira al pasar el ratón o al tocarla y enseña su frase y sus planes.
+- **Únete:** formulario (nombre, email, barrio, intereses y sabor) que dibuja el **carnet de miembro en directo**: color del sabor, número, barrio y un código decorativo que sale del número. Al enviarlo se gira, aparece el sello «Ya eres del crew», suena la fanfarria y se puede **descargar en PNG**. No se envía nada: se guarda solo en el navegador y al volver sigue ahí.
+- Crew añadido al menú y al pie de todas las páginas.
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| Dos pegatinas tapaban el título | Se recolocaron; en móvil se reparten por la mitad de abajo |
+| Los niveles Gota y Burbuja quedaban pegados | Se reparten en cuatro columnas iguales en vez de en proporción |
+| En móvil el carnet salía antes del título de la sección | Va después del formulario y, al hacerte el carnet, la página baja hasta él |
+
+---
+
+## 27/09/2026 · Sesión 11: repaso general (colores, música y cargas)
+
+### Colores
+- El menú ya no usa `mix-blend-mode: difference`, que sobre los fondos amarillos y de colores lo volvía **azul o morado** (fuera de la marca). Ahora tiene dos tintas: crema sobre fondo oscuro y negro de la marca sobre las secciones claras (marcadas con `data-nav="dark"`: sabores del inicio, showroom, caja de la tienda y pared de pegatinas). Cambia con una transición suave (`initNavTheme` en `src/common.js`).
+- En la cronología de Historia, el año grande, la barra de progreso y el menú toman la tinta de cada capítulo (en el último, amarillo sobre negro).
+
+### Música (`src/music.js`)
+- La canción ya no repite los mismos 4 compases: ahora tiene **estructura** que se repite cada 32 compases: estrofa → estribillo (arpegios de campanitas, bombo extra, bajo con saltos de octava y acordes más fuertes) → **puente** con otros acordes (Mim7 – La7 – Fa#m7 – Sim7) y melodía nueva → **bajada** sin batería con colchón de acordes → vuelta con redoble de madera. Platillo suave al empezar cada parte.
+- La intro era casi inaudible (18 dB por debajo de la estrofa): ahora lleva colchón y el bajo entra en su segunda mitad.
+- Con el carrito abierto la música suena **amortiguada**, como detrás de una puerta, y vuelve al cerrarlo.
+- Comprobado renderizando la canción entera sin sonido (OfflineAudioContext) y midiendo el volumen de cada parte: sin errores ni saturación (pico −22 dBFS antes del compresor) y con la bajada unos 6 dB por debajo de la estrofa.
+
+### Pantallas de carga
+- La primera carga mantiene su animación completa; en las siguientes páginas de la misma visita el tiempo mínimo baja de 1,2 s a 0,35 s (`Loader.minimum()` y `Loader.pause()`).
+- Se quitaron los avisos «Invalid property» que salían en la consola de todas las páginas interiores.
+
+---
+
 ## Pendiente
 - [ ] Comprobar en un navegador real (con tarjeta gráfica) cómo se ve todo y cómo suenan los efectos
 - [ ] Activar GitHub Pages en el repositorio (Settings → Pages → Source: GitHub Actions)
 - [x] Página **Sabores**
-- [ ] Página **Tienda**
-- [ ] Páginas de la fase 2: Producto, Historia, Crew y Contacto
+- [x] Página **Historia**
+- [x] Página **Tienda**
+- [x] Página **Producto**
+- [x] Página **Crew**
+- [ ] Página **Contacto**
 - [ ] Extras: página 404 con la lata cayendo

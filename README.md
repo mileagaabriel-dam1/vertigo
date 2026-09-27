@@ -31,17 +31,28 @@ Al subir cambios a la rama `main`, GitHub Actions compila la web y la publica so
 ```
 index.html              Página de inicio
 sabores.html            Página de Sabores (showroom 3D)
+historia.html           Página de Historia (cronología, proceso y radar de origen)
+tienda.html             Tienda (caja 3D para armar tu pack, packs, suscripción y preguntas)
+producto.html           Producto (anatomía 3D de la lata, ingredientes, nutrición, cafeína y ficha técnica)
+crew.html               Crew (pegatinas, agenda de planes, niveles, caras del crew y carnet de miembro)
 public/assets/          Modelos 3D, HDRI y fotos de fruta (ver CREDITOS.md)
 src/
   main.js               Arranque de la página de inicio
   common.js             Lo que comparten todas las páginas (scroll, sonido, cursor, enlaces)
   pages/sabores.js      Arranque de la página de Sabores
+  pages/historia.js     Arranque de la página de Historia
+  pages/tienda.js       Arranque de la Tienda
+  pages/producto.js     Arranque de la página de Producto
+  pages/crew.js         Arranque de la página Crew
+  cart.js · cartDrawer.js  Carrito compartido por todas las páginas y pedido de prueba
   loader.js             Pantalla de carga (espiral, palabra que se llena, ola de salida)
   story.js              "Director": mueve la escena 3D según el punto del scroll
   sections.js           Animaciones de texto de cada sección
   ui.js                 Cursor, enlaces, efectos magnéticos, cinta de texto y contadores
   audio.js · music.js   Efectos de sonido y canción
   data/flavors.js       Sabores, colores y fruta de cada uno
+  data/shop.js          Precios, tamaños de caja y packs de la tienda
+  data/crew.js          Planes, caras del crew, niveles y barrios
   three/                Escena 3D: lata, fruta, bebida, vaso, explosión, burbujas y texturas
   styles/main.css       Estilos
 ```
@@ -50,10 +61,10 @@ src/
 
 - [x] Inicio
 - [x] Sabores (`sabores.html`)
-- [ ] Producto / ficha
-- [ ] Nuestra historia
-- [ ] Vértigo Crew / eventos
-- [ ] Tienda
+- [x] Producto (`producto.html`)
+- [x] Nuestra historia (`historia.html`)
+- [x] Vértigo Crew (`crew.html`)
+- [x] Tienda (`tienda.html`, de prueba: no se cobra nada)
 - [ ] Contacto
 
 El historial completo del proyecto está en [BITACORA.md](BITACORA.md), y los créditos de los recursos de terceros, en [CREDITOS.md](CREDITOS.md).

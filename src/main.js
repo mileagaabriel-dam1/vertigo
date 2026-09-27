@@ -19,7 +19,7 @@ boot();
 async function boot() {
   const loader = new Loader();
   // Mínimo de tiempo en pantalla para que se luzca la animación de carga
-  const minimum = gsap.delayedCall(2.2, () => {});
+  const minimum = Loader.minimum(2.2);
 
   // Las etiquetas de la lata se dibujan con estas fuentes, así que esperamos a que carguen
   await Promise.allSettled([
@@ -60,6 +60,8 @@ async function boot() {
   if (withSound) {
     sound.start();
     sound.canOpen();
+  } else {
+    sound.decline();
   }
   sceneVisible = true;
   await loader.exit();

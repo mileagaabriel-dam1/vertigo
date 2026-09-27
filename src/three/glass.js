@@ -88,7 +88,7 @@ function strawMaterial() {
 }
 
 // Burbujas de gas que suben dentro del vaso
-class GlassBubbles extends THREE.Points {
+export class GlassBubbles extends THREE.Points {
   constructor(count, radius, bottom, top) {
     const positions = new Float32Array(count * 3);
     const seeds = new Float32Array(count);
@@ -139,6 +139,10 @@ class GlassBubbles extends THREE.Points {
     });
     super(geometry, material);
     this.renderOrder = 3;
+  }
+
+  onBeforeRender(renderer) {
+    this.material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
   }
 }
 

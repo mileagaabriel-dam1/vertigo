@@ -69,6 +69,11 @@ export class Bubbles extends THREE.Points {
     this.frustumCulled = false;
   }
 
+  // El tamaño de los puntos va en píxeles: sigue a la resolución actual (puede bajar si va lento)
+  onBeforeRender(renderer) {
+    this.material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
+  }
+
   update(time, scroll) {
     this.material.uniforms.uTime.value = time;
     this.material.uniforms.uScroll.value = scroll;

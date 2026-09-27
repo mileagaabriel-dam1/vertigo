@@ -2,7 +2,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { Sound } from './audio.js';
-import { initCursor, initLinks, initMagnetic, initMarquee } from './ui.js';
+import { initCursor, initLinks, initMagnetic, initMarquee, toast } from './ui.js';
+import { initCartDrawer } from './cartDrawer.js';
 
 // Lo que comparten todas las páginas: scroll suave, sonido, cursor, enlaces y efectos del ratón.
 export function setupPage() {
@@ -36,10 +37,42 @@ export function setupPage() {
     soundButton.setAttribute('aria-label', on ? 'Silenciar' : 'Activar sonido');
   });
 
+  const cartDrawer = initCartDrawer({ lenis, sound });
+  const navTheme = initNavTheme();
+
   initCursor();
   initLinks(lenis);
   initMagnetic();
   if (document.querySelector('.marquee__track')) initMarquee(lenis);
 
-  return { lenis, sound };
+  return { lenis, sound, cartDrawer, navTheme };
+}
+
+// El menú se oscurece mientras pasa por encima de una sección clara (data-nav="dark").
+// set(clave, activo) permite a una página hacerlo a mano (p. ej. los capítulos de colores de Historia).
+function initNavTheme() {
+  const nav = document.querySelector('.nav');
+  const active = new Set();
+  const update = () => nav?.classList.toggle('is-dark', active.size > 0);
+  const set = (key, on) => {
+    if (on) active.add(key);
+    else active.delete(key);
+    update();
+  };
+  document.querySelectorAll('[data-nav="dark"]').forEach((section) => {
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top 44px',
+      end: 'bottom 44px',
+      // Se calcula después de las secciones fijadas (pin) de cada página
+      refreshPriority: -1,
+      onToggle: (self) => set(section, self.isActive),
+    });
+  });
+  return { set };
+}
+
+// Al terminar la pantalla de carga: si la música sonaba en la página anterior, se avisa de cómo seguir
+export function resumeHint(sound) {
+  if (sound.pending) toast('Toca en cualquier sitio para seguir con la música');
 }

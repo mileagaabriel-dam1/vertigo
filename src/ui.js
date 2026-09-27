@@ -156,7 +156,7 @@ export function initCounters() {
 //  - magnéticos: se acercan un poco al puntero y vuelven con un rebote al salir,
 //  - tarjetas: se inclinan en 3D siguiendo al puntero,
 //  - letras del título grande: dan un saltito al tocarlas.
-const MAGNETIC = '.nav__links a, .nav__cta, .nav__sound, .nav__logo, .btn, .hero__badges span, .hero__scroll, .flavors__notes li, .footer__cols a';
+const MAGNETIC = '.nav__links a, .nav__cta, .nav__sound, .nav__cart, .nav__logo, .btn, .hero__badges span, .hero__scroll, .flavors__notes li, .footer__cols a';
 const TILT = '.stat, .compare__card';
 
 export function initMagnetic() {

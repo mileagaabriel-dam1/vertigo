@@ -15,6 +15,32 @@ export function createRenderer(canvas) {
   return renderer;
 }
 
+// Si el ordenador no llega a unos 50 fps, baja la resolución del 3D poco a poco (hasta 1x).
+// Devuelve una función que hay que llamar en cada fotograma, antes de dibujar.
+export function adaptiveResolution(renderer) {
+  let ratio = renderer.getPixelRatio();
+  let last = performance.now();
+  let frames = 0;
+  let slow = 0;
+  return () => {
+    const now = performance.now();
+    const dt = now - last;
+    last = now;
+    // Pausas largas (pestaña en segundo plano, tirón puntual) no cuentan
+    if (dt > 250 || ratio <= 1) return;
+    frames++;
+    if (dt > 20) slow++;
+    if (frames < 60) return;
+    // Solo baja si más de la mitad de los fotogramas han ido lentos: un tirón suelto no basta
+    if (slow > 30) {
+      ratio = Math.max(1, ratio - 0.25);
+      renderer.setPixelRatio(ratio);
+    }
+    frames = 0;
+    slow = 0;
+  };
+}
+
 // HDRI de estudio fotográfico como luz ambiente y reflejos
 export function applyEnvironment(scene, renderer, hdr) {
   hdr.mapping = THREE.EquirectangularReflectionMapping;

@@ -28,7 +28,36 @@ function spiralPath(turns = 9, radius = 98, steps = 1400) {
   return d;
 }
 
+const VISITED = 'vertigo-visited';
+
 export class Loader {
+  // ¿Ya se ha visto una pantalla de carga en esta visita? Entonces las siguientes van rápidas
+  static get repeat() {
+    try {
+      return sessionStorage.getItem(VISITED) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  static remember() {
+    try {
+      sessionStorage.setItem(VISITED, '1');
+    } catch {
+      // Sin almacenamiento: todas las cargas duran lo mismo
+    }
+  }
+
+  // Tiempo mínimo en pantalla (para que se luzca la animación la primera vez, no en cada cambio de página)
+  static minimum(seconds) {
+    return gsap.delayedCall(Loader.repeat ? Math.min(seconds, 0.35) : seconds, () => {});
+  }
+
+  // Pausa entre «todo listo» y la salida
+  static pause() {
+    return new Promise((r) => setTimeout(r, Loader.repeat ? 120 : 500));
+  }
+
   // auto: sin botón de entrada; al terminar de cargar sale sola (páginas interiores)
   constructor({ auto = false } = {}) {
     this.auto = auto;
@@ -211,11 +240,12 @@ export class Loader {
 
   exit() {
     if (this.onMove) window.removeEventListener('pointermove', this.onMove);
+    Loader.remember();
     return new Promise((resolve) => {
-      gsap
-        .timeline()
-        .to(this.enter || {}, { scale: 0.6, opacity: 0, duration: 0.45, ease: 'back.in(2)' }, 0)
-        .to('.loader__top, .loader__bottom, .loader__bar', { opacity: 0, duration: 0.4 }, 0)
+      const tl = gsap.timeline();
+      // Solo el inicio tiene botón de entrada (las páginas interiores salen solas)
+      if (this.enter) tl.to(this.enter, { scale: 0.6, opacity: 0, duration: 0.45, ease: 'back.in(2)' }, 0);
+      tl.to('.loader__top, .loader__bottom, .loader__bar', { opacity: 0, duration: 0.4 }, 0)
         .to(this, { speed: 9, duration: 1.1, ease: 'power2.in' }, 0)
         .to('.loader__center', { scale: 1.3, opacity: 0, filter: 'blur(14px)', duration: 0.9, ease: 'power3.in' }, 0.05)
         .to(this.spiral, { scale: 9, rotation: 540, duration: 1.5, ease: 'expo.in' }, 0)

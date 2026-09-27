@@ -79,6 +79,7 @@ export function createDirector({ stage, flavors, onFlavor, flash, sound }) {
   let lastTime = 0;
   let lastS = 0;
   let flavorIndex = 0;
+  let lastFlash = '';
 
   const current = { x: 0, y: 0, rz: 0, mx: 0, my: 0 };
   const pointer = { x: 0, y: 0 };
@@ -211,7 +212,9 @@ export function createDirector({ stage, flavors, onFlavor, flash, sound }) {
     stage.burst.update(clamp((s - BURST) / 0.5, 0, 1), time);
     stage.bubbles.update(time, s * 1.2);
     stage.bubbles.material.uniforms.uOpacity.value = lerp(stage.bubbles.material.uniforms.uOpacity.value, inFlavors ? 0.7 : 1, damp);
-    flash.style.opacity = Math.max(0, 1 - Math.abs(s - BURST - 0.01) / 0.03).toFixed(3);
+    // Solo se toca el estilo si cambia (casi siempre vale 0)
+    const flashOpacity = Math.max(0, 1 - Math.abs(s - BURST - 0.01) / 0.03).toFixed(3);
+    if (flashOpacity !== lastFlash) flash.style.opacity = lastFlash = flashOpacity;
 
     // Sabores: tras la entrada (0.2 del capítulo), cada sabor ocupa otro 0.2
     const f = s - 3;

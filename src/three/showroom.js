@@ -5,7 +5,7 @@ import { FruitCluster } from './cluster.js';
 import { createFruitKits } from './fruit.js';
 import { loadAssets } from './assets.js';
 import { Poke, applyPoke } from './poke.js';
-import { createRenderer, applyEnvironment, studioLights, shadowWall, precompile } from './studio.js';
+import { createRenderer, adaptiveResolution, applyEnvironment, studioLights, shadowWall, precompile } from './studio.js';
 import { labelTexture, condensationTextures, brushedTexture } from './textures.js';
 
 const { lerp, euclideanModulo } = THREE.MathUtils;
@@ -38,6 +38,7 @@ export class Showroom {
     this.listeners = new Set();
 
     this.renderer = createRenderer(canvas);
+    this.adaptResolution = adaptiveResolution(this.renderer);
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
     this.camera.position.set(0, 0, 7);
@@ -185,6 +186,7 @@ export class Showroom {
     this.cluster.update(time);
 
     this.bubbles.update(time, time * 0.05);
+    this.adaptResolution();
     this.renderer.render(this.scene, this.camera);
   }
 }

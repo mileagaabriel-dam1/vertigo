@@ -2,11 +2,13 @@ import '../styles/main.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { setupPage } from '../common.js';
+import { setupPage, resumeHint } from '../common.js';
 import { Loader } from '../loader.js';
 import { FLAVORS } from '../data/flavors.js';
 import { Showroom } from '../three/showroom.js';
 import { toast, initCounters } from '../ui.js';
+import { cart } from '../cart.js';
+import { packPrice } from '../data/shop.js';
 
 // Página de Sabores: showroom 3D con las cuatro latas + comparativa + ingredientes.
 
@@ -36,7 +38,7 @@ boot();
 
 async function boot() {
   const loader = new Loader({ auto: true });
-  const minimum = gsap.delayedCall(1.2, () => {});
+  const minimum = Loader.minimum(1.2);
 
   await Promise.allSettled([
     document.fonts.load('400 100px "Anton"'),
@@ -77,9 +79,10 @@ async function boot() {
   ScrollTrigger.refresh();
   await minimum;
   loader.ready();
-  await new Promise((r) => setTimeout(r, 500));
+  await Loader.pause();
   started = true;
   await loader.exit();
+  resumeHint(sound);
   intro();
 }
 
@@ -155,8 +158,18 @@ function initPanel(section, showroom) {
     sound.swap();
   });
 
+  // Añade un pack de 6 latas del sabor que está delante
   section.querySelector('.js-sr-add').addEventListener('click', () => {
-    toast(`${FLAVORS[showroom.index].full} añadido al carrito · la tienda llega pronto`);
+    const f = FLAVORS[showroom.index];
+    cart.add({
+      id: `six-${f.id}`,
+      name: `Pack de 6 · ${f.full}`,
+      detail: `6 latas de ${f.name}`,
+      price: packPrice(6),
+      colors: [f.color],
+    });
+    sound.pop();
+    toast(`${f.full} añadido al carrito · pack de 6 latas`);
   });
 
   return { render };
