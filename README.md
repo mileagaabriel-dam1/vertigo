@@ -35,6 +35,8 @@ historia.html           Página de Historia (cronología, proceso y radar de ori
 tienda.html             Tienda (caja 3D para armar tu pack, packs, suscripción y preguntas)
 producto.html           Producto (anatomía 3D de la lata, ingredientes, nutrición, cafeína y ficha técnica)
 crew.html               Crew (pegatinas, agenda de planes, niveles, caras del crew y carnet de miembro)
+contacto.html           Contacto (burbujas, canales, formulario con borrador y mapa ilustrado)
+404.html                Página de error: la lata cae por una espiral y se puede rescatar
 public/assets/          Modelos 3D, HDRI y fotos de fruta (ver CREDITOS.md)
 src/
   main.js               Arranque de la página de inicio
@@ -44,6 +46,8 @@ src/
   pages/tienda.js       Arranque de la Tienda
   pages/producto.js     Arranque de la página de Producto
   pages/crew.js         Arranque de la página Crew
+  pages/contacto.js     Arranque de la página de Contacto
+  pages/notfound.js     Página 404
   cart.js · cartDrawer.js  Carrito compartido por todas las páginas y pedido de prueba
   loader.js             Pantalla de carga (espiral, palabra que se llena, ola de salida)
   story.js              "Director": mueve la escena 3D según el punto del scroll
@@ -65,6 +69,7 @@ src/
 - [x] Nuestra historia (`historia.html`)
 - [x] Vértigo Crew (`crew.html`)
 - [x] Tienda (`tienda.html`, de prueba: no se cobra nada)
-- [ ] Contacto
+- [x] Contacto (`contacto.html`)
+- [x] Página 404 (`404.html`)
 
 El historial completo del proyecto está en [BITACORA.md](BITACORA.md), y los créditos de los recursos de terceros, en [CREDITOS.md](CREDITOS.md).

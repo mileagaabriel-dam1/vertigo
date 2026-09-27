@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      GitHub Pages enseña esta página en cualquier dirección que no existe, también dentro de carpetas
+      (/vertigo/a/b/c). Para que los archivos relativos (./assets/...) se encuentren, en github.io
+      se fija la base en la carpeta del proyecto antes de cargar nada.
+    -->
+    <script>
+      (function () {
+        var m = location.pathname.match(/^\/[^/]+\//);
+        if (/github\.io$/.test(location.hostname) && m) document.write('<base href="' + m[0] + '">');
+      })();
+    </script>
+    <title>Página no encontrada — Vértigo</title>
+    <meta name="description" content="Esta página se ha caído al vacío. Vuelve al inicio de Vértigo." />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+  </head>
+  <body class="page-404">
+    <!-- Ola de bebida para los cambios de página -->
+    <div class="wipe" aria-hidden="true">
+      <svg class="wipe__wave wipe__wave--top" viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <path d="M0 60 V30 Q 150 0 300 30 T 600 30 T 900 30 T 1200 30 V60 Z" />
+      </svg>
+      <svg class="wipe__wave wipe__wave--bottom" viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <path d="M0 0 V30 Q 150 60 300 30 T 600 30 T 900 30 T 1200 30 V0 Z" />
+      </svg>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+    <div class="toast" role="status" aria-live="polite"></div>
+
+    <header class="nav">
+      <a href="index.html" class="nav__logo" aria-label="Vértigo, ir al inicio">
+        <svg viewBox="1 1 12 12" aria-hidden="true">
+          <path
+            d="M6 7a1 1 0 0 1 2 0a2 2 0 0 1-4 0a3 3 0 0 1 6 0a4 4 0 0 1-8 0a5 5 0 0 1 10 0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>Vértigo</span>
+      </a>
+      <nav class="nav__links" aria-label="Principal">
+        <a href="sabores.html">Sabores</a>
+        <a href="producto.html">Producto</a>
+        <a href="historia.html">Historia</a>
+        <a href="crew.html">Crew</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="nav__actions">
+        <button type="button" class="nav__sound js-sound" aria-label="Activar sonido" aria-pressed="false">
+          <span></span><span></span><span></span><span></span>
+        </button>
+        <a href="tienda.html" class="nav__cta">Comprar</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- La lata cae por una espiral sin fondo; con un clic se rescata -->
+      <section class="void" aria-labelledby="void-title">
+        <canvas class="void__tunnel js-tunnel" aria-hidden="true"></canvas>
+        <button type="button" class="void__can js-can" aria-label="Rescatar la lata"></button>
+
+        <div class="void__content">
+          <p class="void__code" aria-hidden="true">404</p>
+          <h1 class="void__title" id="void-title">Esta página se ha caído <em>al vacío</em>.</h1>
+          <p class="void__text">La dirección que buscas no existe, o se la ha llevado la espiral. Mientras tanto, rescata alguna lata.</p>
+          <div class="void__actions">
+            <a href="index.html" class="btn">Volver al inicio <span class="btn__arrow">→</span></a>
+            <a href="sabores.html" class="void__link">Ver los sabores</a>
+            <a href="tienda.html" class="void__link">Ir a la tienda</a>
+          </div>
+        </div>
+
+        <p class="void__score" aria-live="polite">
+          Latas rescatadas: <b class="js-saved">0</b> · récord <b class="js-best">0</b>
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/pages/notfound.js"></script>
+  </body>
+</html>

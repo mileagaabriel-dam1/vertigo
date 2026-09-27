@@ -235,6 +235,15 @@ export class Sound {
     this.music.swell(1.25, 0.4);
   }
 
+  // Burbuja que explota: «plop» corto, más agudo cuanto más pequeña es (size de 0 a 1)
+  bubble(size = 0.5) {
+    if (!this.ready) return;
+    const t = this.now;
+    const f = 380 + (1 - size) * 700;
+    this.tone('sine', f, f * 2.2, t, 0.002, 0.18, 0.07);
+    this.hiss(t, 'highpass', 4000, 6000, 0.001, 0.05, 0.03);
+  }
+
   // Pedido hecho: arpegio de marimba en Re mayor, efervescencia y la música a tope un momento
   fanfare() {
     if (!this.ready) return;

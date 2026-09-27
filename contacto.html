@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crew — Vértigo</title>
+    <title>Contacto — Vértigo</title>
     <meta
       name="description"
-      content="Vértigo Crew: la comunidad de Vértigo en Barcelona. Agenda de planes, niveles, caras del crew y tu carnet de miembro."
+      content="Contacta con Vértigo: pedidos, prensa, crew y trabajo. Escríbenos o ven a vernos a Gràcia y Poblenou."
     />
     <meta name="theme-color" content="#0b0b0d" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -17,7 +17,7 @@
       href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap"
     />
   </head>
-  <body class="page-crew">
+  <body class="page-contacto">
     <div class="loader" role="dialog" aria-label="Cargando Vértigo">
       <canvas class="loader__bubbles" aria-hidden="true"></canvas>
       <div class="loader__glow" aria-hidden="true"></div>
@@ -48,7 +48,7 @@
       </div>
 
       <div class="loader__center">
-        <p class="loader__kicker">Juntando al crew</p>
+        <p class="loader__kicker">Abriendo el buzón</p>
         <div class="loader__word" aria-hidden="true">
           <span class="loader__word-outline">Vértigo</span>
           <span class="loader__word-fill">Vértigo</span>
@@ -97,8 +97,8 @@
         <a href="sabores.html">Sabores</a>
         <a href="producto.html">Producto</a>
         <a href="historia.html">Historia</a>
-        <a href="crew.html" aria-current="page">Crew</a>
-        <a href="contacto.html">Contacto</a>
+        <a href="crew.html">Crew</a>
+        <a href="contacto.html" aria-current="page">Contacto</a>
       </nav>
       <div class="nav__actions">
         <button type="button" class="nav__sound js-sound" aria-label="Activar sonido" aria-pressed="false">
@@ -109,129 +109,86 @@
     </header>
 
     <main id="top">
-      <!-- 01 · Pared de pegatinas: se arrastran y se lanzan -->
-      <section class="wall" id="pegatinas" aria-label="Vértigo Crew" data-nav="dark">
-        <div class="wall__title">
-          <p class="eyebrow">Vértigo Crew</p>
-          <h1 class="wall__heading"><span>Gente que</span><span>no frena.</span></h1>
-          <p class="wall__lead">Corremos, bailamos, estudiamos y dibujamos juntos por Barcelona. La lata es la excusa.</p>
+      <!-- 01 · Burbujas que reaccionan al cursor -->
+      <section class="fizz" id="hola" aria-label="Contacto">
+        <canvas class="fizz__canvas js-fizz" aria-hidden="true"></canvas>
+        <div class="fizz__content">
+          <p class="eyebrow">Contacto</p>
+          <h1 class="fizz__title"><span>Hablemos</span><span>sin gas.</span></h1>
+          <p class="fizz__lead">Pedidos, prensa, eventos o una idea para el próximo sabor. Respondemos en menos de 24 h laborables.</p>
         </div>
-        <div class="stickers js-stickers" aria-hidden="true"></div>
-        <p class="wall__hint" aria-hidden="true"><span>✦</span> Arrastra y lanza las pegatinas</p>
+        <p class="fizz__score" aria-live="polite"><span class="js-popped">0</span> burbujas explotadas</p>
+        <p class="fizz__hint" aria-hidden="true">Mueve el ratón · haz clic para explotarlas</p>
       </section>
 
-      <!-- 02 · Qué es el crew -->
-      <section class="crew-about" id="que-es">
-        <p class="eyebrow">01 — Qué es</p>
-        <p class="crew-about__text">
-          Empezó con tres amigos repartiendo latas en la puerta de la facultad. Ahora somos una comunidad que se junta
-          cada semana a hacer cosas que dan <em>un poco de vértigo</em>. No hay cuota, no hay que ser deportista y no
-          hace falta traer nada.
-        </p>
-        <div class="crew-about__stats">
-          <p><b data-count="1240">0</b><span>personas en el crew</span></p>
-          <p><b data-count="36">0</b><span>planes al trimestre</span></p>
-          <p><b data-count="10">0</b><span>barrios de Barcelona</span></p>
-          <p><b data-count="0">0</b><span>euros de cuota</span></p>
+      <!-- 02 · Canales -->
+      <section class="channels" id="canales">
+        <div class="channels__head">
+          <p class="eyebrow">01 — A quién escribir</p>
+          <h2 class="channels__title">Cada cosa, <em>a su lata</em>.</h2>
         </div>
+        <div class="channels__grid js-channels"></div>
+        <p class="channels__note">Direcciones de una marca ficticia (proyecto académico): no escribas a ellas esperando respuesta.</p>
       </section>
 
-      <!-- 03 · Agenda -->
-      <section class="agenda" id="agenda">
-        <div class="agenda__head">
-          <p class="eyebrow">02 — Próximos planes</p>
-          <h2 class="agenda__title">La <em>agenda</em>.</h2>
-          <div class="agenda__filters js-filters" role="group" aria-label="Filtrar por tipo de plan"></div>
-        </div>
-        <ol class="agenda__list js-agenda"></ol>
-      </section>
-
-      <!-- 04 · Niveles -->
-      <section class="levels" id="niveles">
-        <div class="levels__head">
-          <p class="eyebrow">03 — Niveles</p>
-          <h2 class="levels__title">Cuanto más caes, <em>más subes</em>.</h2>
-          <p class="levels__text">Cada plan al que vas suma. Mueve la barra: ¿a cuántos irías en un año?</p>
-        </div>
-
-        <div class="levels__box">
-          <label class="levels__slider">
-            <span class="levels__count"><b class="js-level-count">6</b> planes al año</span>
-            <input type="range" class="js-level-range" min="0" max="30" value="6" aria-label="Planes al año" />
-          </label>
-          <ol class="tiers js-tiers"></ol>
-          <div class="perks">
-            <p class="perks__title">Con el nivel <b class="js-tier-name">Burbuja</b> tienes:</p>
-            <ul class="perks__list js-perks"></ul>
+      <!-- 03 · Formulario -->
+      <section class="message" id="mensaje">
+        <div class="message__intro">
+          <p class="eyebrow">02 — Escríbenos</p>
+          <h2 class="message__title">Mete tu mensaje<br /><em>en la lata</em>.</h2>
+          <p class="message__text">
+            Cuéntanos lo que sea. Si cierras la página a medias, el borrador te espera aquí. No se envía nada: es una web de prueba.
+          </p>
+          <div class="message__can js-send-can" aria-hidden="true">
+            <span class="message__can-body"></span>
+            <span class="message__can-note js-can-note"></span>
           </div>
         </div>
-      </section>
 
-      <!-- 05 · Embajadores -->
-      <section class="people" id="embajadores">
-        <div class="people__head">
-          <p class="eyebrow">04 — Caras del crew</p>
-          <h2 class="people__title">Los que <em>tiran</em> del grupo.</h2>
-          <p class="people__text">Pasa por encima (o toca) cada tarjeta para darle la vuelta.</p>
-        </div>
-        <div class="people__grid js-people"></div>
-      </section>
-
-      <!-- 06 · Únete: formulario + carnet que se genera en directo -->
-      <section class="join" id="unete">
-        <div class="join__form-wrap">
-          <p class="eyebrow">05 — Únete</p>
-          <h2 class="join__title">Hazte<br /><em>el carnet</em>.</h2>
-          <p class="join__text">Rellénalo y mira cómo se hace tu carnet al momento. No se envía nada: se queda en este navegador.</p>
-
-          <form class="join__form js-join" novalidate>
+        <form class="message__form js-message" novalidate>
+          <fieldset class="field">
+            <legend>Es sobre</legend>
+            <div class="chips js-topics"></div>
+          </fieldset>
+          <div class="message__row">
             <label class="field">
               <span>Nombre</span>
-              <input type="text" name="name" maxlength="28" autocomplete="given-name" required placeholder="Cómo te llamamos" />
+              <input type="text" name="name" maxlength="40" autocomplete="name" required placeholder="Tu nombre" />
             </label>
             <label class="field">
               <span>Email</span>
               <input type="email" name="email" autocomplete="email" required placeholder="tu@correo.com" />
             </label>
-            <label class="field">
-              <span>Barrio</span>
-              <select name="district" class="js-districts"></select>
-            </label>
-            <fieldset class="field">
-              <legend>Te apetece</legend>
-              <div class="chips js-interests"></div>
-            </fieldset>
-            <fieldset class="field">
-              <legend>Tu sabor</legend>
-              <div class="chips js-favs"></div>
-            </fieldset>
-            <p class="join__error js-join-error" role="alert"></p>
-            <button type="submit" class="btn">Quiero mi carnet <span class="btn__arrow">→</span></button>
-          </form>
-        </div>
-
-        <div class="join__card-wrap">
-          <div class="member-card js-card">
-            <div class="member-card__top">
-              <span class="member-card__brand">
-                <svg viewBox="1 1 12 12" aria-hidden="true">
-                  <path d="M6 7a1 1 0 0 1 2 0a2 2 0 0 1-4 0a3 3 0 0 1 6 0a4 4 0 0 1-8 0a5 5 0 0 1 10 0" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                </svg>
-                Vértigo Crew
-              </span>
-              <span class="member-card__tier">Nivel Gota</span>
-            </div>
-            <p class="member-card__name js-card-name">Tu nombre</p>
-            <dl class="member-card__data">
-              <div><dt>Nº</dt><dd class="js-card-number">VTG-00000</dd></div>
-              <div><dt>Barrio</dt><dd class="js-card-district">—</dd></div>
-              <div><dt>Sabor</dt><dd class="js-card-flavor">—</dd></div>
-            </dl>
-            <p class="member-card__tags js-card-tags"></p>
-            <svg class="member-card__code js-card-code" viewBox="0 0 11 11" aria-hidden="true"></svg>
-            <span class="member-card__stamp" aria-hidden="true">Ya eres del crew</span>
           </div>
-          <button type="button" class="join__download js-download" hidden>Descargar el carnet (PNG) <span>↓</span></button>
+          <label class="field">
+            <span>Mensaje <small class="js-chars">0 / 600</small></span>
+            <textarea name="text" rows="6" maxlength="600" required placeholder="Hola, Vértigo…"></textarea>
+          </label>
+          <p class="join__error js-message-error" role="alert"></p>
+          <button type="submit" class="btn">Enviar la lata <span class="btn__arrow">→</span></button>
+        </form>
+
+        <div class="sent js-sent" hidden>
+          <p class="sent__kicker js-sent-number"></p>
+          <h3 class="sent__title">¡Lata <em>enviada</em>!</h3>
+          <p class="sent__text js-sent-text"></p>
+          <p class="sent__note">Es una web de prueba: el mensaje no ha salido de tu navegador.</p>
+          <button type="button" class="btn js-sent-again">Escribir otra <span class="btn__arrow">↺</span></button>
+        </div>
+      </section>
+
+      <!-- 04 · Dónde estamos -->
+      <section class="places" id="donde">
+        <div class="places__head">
+          <p class="eyebrow">03 — Dónde estamos</p>
+          <h2 class="places__title">Dos sitios, <em>una ciudad</em>.</h2>
+        </div>
+        <div class="places__body">
+          <figure class="city">
+            <svg class="city__map js-map" viewBox="0 0 800 520" role="img" aria-label="Mapa ilustrativo de Barcelona con los dos locales de Vértigo"></svg>
+            <figcaption class="city__caption">Mapa ilustrativo, no a escala.</figcaption>
+          </figure>
+          <ul class="places__list js-places"></ul>
         </div>
       </section>
     </main>
@@ -279,6 +236,6 @@
       </div>
     </footer>
 
-    <script type="module" src="/src/pages/crew.js"></script>
+    <script type="module" src="/src/pages/contacto.js"></script>
   </body>
 </html>

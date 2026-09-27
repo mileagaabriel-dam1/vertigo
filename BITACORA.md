@@ -15,7 +15,7 @@ Las entradas más recientes van al final.
 | **Carpeta** | `C:\Vértigo` (Windows, sesiones 1-6) · `~/vertigo` (Mac, desde la sesión 7) |
 | **Repositorio** | https://github.com/mileagaabriel-dam1/vertigo |
 | **Web publicada** | https://mileagaabriel-dam1.github.io/vertigo/ |
-| **Estado** | Seis páginas terminadas: Inicio, Sabores, Historia, Tienda, Producto y Crew. Faltan Contacto y la 404 |
+| **Estado** | Web completa: Inicio, Sabores, Historia, Tienda, Producto, Crew, Contacto y la página 404 |
 
 ---
 
@@ -407,8 +407,32 @@ La web compilada ocupa unos 7,5 MB, casi todo texturas de fruta y el HDRI.
 
 ---
 
+## 27/09/2026 · Sesión 12: Contacto y 404 (web completa)
+
+### Página de Contacto (`contacto.html`)
+- **Burbujas que reaccionan al cursor** (la idea de la planificación): un campo de burbujas en canvas que suben y se apartan del ratón, las pequeñas más que las grandes. Con un clic explotan (aro que se abre y gotitas), con un «plop» más agudo cuanto más pequeña es la burbuja y un contador. Cada 25 burbujas, aviso y subidón de música.
+- **Canales:** cuatro tarjetas de colores (pedidos, prensa, crew y trabajo) con botón para **copiar el email** al portapapeles y otro que baja al formulario con el tema ya elegido.
+- **Formulario «mete tu mensaje en la lata»:** tema, nombre, email y mensaje con contador de caracteres. El **borrador se guarda** en el navegador mientras escribes. Al enviarlo, la nota entra en la lata, la lata tiembla y sale disparada; aparece un resumen con número de mensaje. No se envía nada.
+- **Dónde estamos:** mapa ilustrado de Barcelona hecho con SVG por código (manzanas del Eixample con chaflán, Diagonal, costa y mar) con las chinchetas de La Cocina (Gràcia) y Nave Vértigo (Poblenou), que caen al llegar y se iluminan junto a su ficha.
+- Contacto añadido al menú y al pie de todas las páginas.
+
+### Página 404 (`404.html`)
+- La lata cae por un **túnel en espiral** sin fondo (anillos que vienen hacia ti y los brazos de la espiral de la marca girando).
+- **Minijuego:** haz clic cerca de la lata para rescatarla antes de que llegue al centro; cada rescate hace caer la siguiente más deprisa. Récord guardado en el navegador. Botones para volver al inicio, a los sabores o a la tienda.
+- Sin pantalla de carga, para que salga al momento.
+- GitHub Pages la enseña en cualquier dirección que no existe, también dentro de carpetas: un pequeño script fija la base de la web en `/vertigo/` antes de cargar nada, para que los estilos y el código se encuentren.
+
+### Problemas encontrados y soluciones
+| Problema | Solución |
+|---|---|
+| Las burbujas tapaban el título de Contacto | El texto va por encima de las burbujas y el párrafo lleva una sombra del color del fondo |
+| En la 404 costaba atinar a la lata cuando ya era pequeña | La zona de clic es un círculo generoso alrededor de la lata |
+| En el servidor de desarrollo (`npm run dev`) una dirección inexistente enseña el inicio, no la 404 | Es normal en Vite; en GitHub Pages sí sale la 404 |
+
+---
+
 ## Pendiente
-- [ ] **Subir el commit a GitHub**: `git push origin main` desde la carpeta del proyecto. Usuario `mileagaabriel-dam1` y, como contraseña, un token (GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic), con los permisos `repo` y `workflow`)
+- [x] Subir el proyecto a GitHub (el acceso quedó guardado en el llavero del Mac)
 - [ ] Activar GitHub Pages en el repositorio (Settings → Pages → Source: GitHub Actions) y comprobar que la web publicada responde
 - [ ] Comprobar en un navegador real (con tarjeta gráfica) cómo se ve todo y cómo suenan la música y los efectos
 - [ ] Revisar los datos de la página de Producto: ingredientes, nutrición y ficha técnica son inventados; la cafeína de otras bebidas y el límite de 400 mg son valores orientativos de la EFSA puestos de memoria y hay que confirmarlos con la fuente
@@ -417,7 +441,7 @@ La web compilada ocupa unos 7,5 MB, casi todo texturas de fruta y el HDRI.
 - [x] Página **Tienda**
 - [x] Página **Producto**
 - [x] Página **Crew**
-- [ ] Página **Contacto**
-- [ ] Extras: página 404 con la lata cayendo
+- [x] Página **Contacto**
+- [x] Página **404** con la lata cayendo
 - [ ] Accesibilidad: respetar «reducir movimiento» en las animaciones grandes (ahora solo se respeta en parte: scroll suave y algunas animaciones CSS)
 - [ ] Decidir qué hacer con los enlaces a Instagram, TikTok y YouTube del pie (ahora dicen «en construcción»; la marca es ficticia)

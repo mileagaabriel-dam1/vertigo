@@ -18,6 +18,8 @@ export default defineConfig({
         tienda: page('./tienda.html'),
         producto: page('./producto.html'),
         crew: page('./crew.html'),
+        contacto: page('./contacto.html'),
+        notFound: page('./404.html'),
       },
     },
   },
